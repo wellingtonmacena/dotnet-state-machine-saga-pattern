@@ -12,6 +12,8 @@ namespace WebApi.Payments
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
 
@@ -21,9 +23,19 @@ namespace WebApi.Payments
                 app.MapOpenApi();
             }
 
+            _ = app.UseSwagger();
+            _ = app.UseSwaggerUI(c =>
+            {
+                c.EnableTryItOutByDefault();
+                c.DisplayRequestDuration();
+            });
+
+
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
+
+            app.MapGet("/", () => "Payments Microservice is running...");
 
 
             app.MapControllers();

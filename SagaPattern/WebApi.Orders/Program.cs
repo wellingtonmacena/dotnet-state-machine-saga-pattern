@@ -1,34 +1,105 @@
 
+using MassTransit;
+using Microsoft.EntityFrameworkCore;
+using WebApi.Orders.Messages;
+using WebApi.Orders.Sagas;
+
 namespace WebApi.Orders
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
-            var builder = WebApplication.CreateBuilder(args);
+            WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            builder.Services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+                });
 
-            builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
 
-            var app = builder.Build();
+            builder.Services.AddDbContext<AppDbContext>(options =>
+                options.UseNpgsql(
+                    builder.Configuration.GetConnectionString("DbConnectionString")));
+
+            builder.Services.AddMassTransit(busConfigurator =>
+            {
+                busConfigurator.SetKebabCaseEndpointNameFormatter();
+
+                busConfigurator.AddConsumers(typeof(Program).Assembly);
+
+                busConfigurator.AddSagaStateMachine<ProductOrderingSaga, ProductOrderingSagaData>()
+                    .EntityFrameworkRepository(r =>
+                    {
+                        r.ExistingDbContext<AppDbContext>();
+
+                        r.UsePostgres();
+                    });
+
+                busConfigurator.UsingRabbitMq((context, cfg) =>
+                {
+                    string? host = builder.Configuration["RabbitMQ:Host"];
+                    string? user = builder.Configuration["RabbitMQ:Username"];
+                    string? password = builder.Configuration["RabbitMQ:Password"];
+
+                    cfg.Host(host, "/", h =>
+                    {
+                        h.Username(user);
+                        h.Password(password);
+                    });
+
+                    cfg.UseInMemoryOutbox(context);
+
+                    cfg.ConfigureEndpoints(context);
+                });
+            });
+
+            WebApplication app = builder.Build();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
+                using IServiceScope scope = app.Services.CreateScope();
+                await using AppDbContext dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                await dbContext.Database.MigrateAsync();
+                await dbContext.Database.EnsureCreatedAsync();
             }
+
+            _ = app.UseSwagger();
+            _ = app.UseSwaggerUI(c =>
+            {
+                c.EnableTryItOutByDefault();
+                c.DisplayRequestDuration();
+            });
+
 
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
 
+            app.MapGet("/", async (AppDbContext appDbContext) =>
+            {
+                return Results.Ok(await appDbContext.Orders.AsNoTracking().ToListAsync());
+            });
+
+            app.MapPost("/", async (AppDbContext appDbContext, IBus bus) =>
+            {
+                var order = new CreateOrder() { CartId = Guid.NewGuid(), CustomerId = Guid.NewGuid(), TotalPrice = new Random().Next(0, 1000) };
+                await bus.Publish(order);
+
+                return Results.Accepted();
+            });
 
             app.MapControllers();
 
-            app.Run();
+            await app.RunAsync(); // Changed to RunAsync to support async Main
         }
     }
 }

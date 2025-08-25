@@ -1,0 +1,31 @@
+﻿using MassTransit;
+
+namespace WebApi.Orders.Sagas;
+
+public class ProductOrderingSagaData : SagaStateMachineInstance
+{
+    public Guid CorrelationId { get; set; }
+    public string CurrentState { get; set; } = string.Empty;
+
+    // Pedido
+    public Guid OrderId { get; set; }
+    public DateTime CreatedAt { get; set; }
+
+    // Estoque
+    public DateTime? StockCheckedAt { get; set; }
+
+    // Pagamento
+    public decimal? AmountPaid { get; set; }
+    public DateTime? PaymentAt { get; set; }
+    public DateTime? PaymentFailedAt { get; set; }
+
+    // Entrega
+    public DateTime? ShippedAt { get; set; }
+    public DateTime? DeliveredAt { get; set; }
+    public DateTime? DeliveryFailedAt { get; set; }
+
+    // Status
+    public string? FailureReason { get; set; }
+    public bool IsCanceled { get; set; }
+    public bool IsCompleted { get; set; }
+}
