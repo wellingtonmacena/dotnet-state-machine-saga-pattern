@@ -23,12 +23,22 @@
     public record ProductsAvailableChecked
     {
         public Guid OrderId { get; init; }
+        public Guid ProductId { get; init; }
+        public int Quantity { get; init; }
         public DateTime CheckedAt { get; init; }
     }
 
     public record ProductsUnavailableChecked
     {
         public Guid OrderId { get; init; }
+        public DateTime CheckedAt { get; init; }
+    }
+
+    public record ProductsReturned
+    {
+        public Guid OrderId { get; init; }
+        public Guid ProductId { get; init; }
+        public int Quantity { get; init; }
         public DateTime CheckedAt { get; init; }
     }
 

@@ -1,9 +1,9 @@
 ﻿using Library.MessagingContracts.Messages;
 using MassTransit;
 
-namespace WebApi.Inventory.Consumer
+namespace WebApi.Inventory.Handlers
 {
-    public class CheckProductsAvailableEventReceivedConsumer(AppDbContext appDbContext) : IConsumer<CheckProductsAvailableEventReceived>
+    public class CheckProductsAvailableEventReceivedHandler(AppDbContext appDbContext) : IConsumer<CheckProductsAvailableEventReceived>
     {
         public async Task Consume(ConsumeContext<CheckProductsAvailableEventReceived> context)
         {

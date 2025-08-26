@@ -13,7 +13,8 @@ namespace WebApi.Orders.Handlers
                 ProductId = context.Message.ProductId,
                 Quantity = context.Message.Quantity,
                 TotalPrice = context.Message.TotalPrice,
-                Status = EStatus.Created
+                Status = EStatus.Created,
+                PaymentMethod = context.Message.PaymentMethod
             };
 
             Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<Order> createdOrder = await appDbContext.Orders.AddAsync(order);

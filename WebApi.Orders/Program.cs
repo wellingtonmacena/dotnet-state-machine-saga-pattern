@@ -1,4 +1,5 @@
 
+using Library.MessagingContracts.Messages;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using WebApi.Orders.Messages;
@@ -104,7 +105,11 @@ namespace WebApi.Orders
 
             app.MapPost("/", async (AppDbContext appDbContext, IBus bus) =>
             {
-                var order = new CreateOrder(Guid.Parse("3a1f2c44-5f6d-4e5e-9b3f-21a7e8d1c001"), 2, new Random().Next(0, 1000));
+                var paymentMethods = Enum.GetValues<PaymentMethod>();
+                var randomNumber = new Random().Next(0, paymentMethods.Length - 1);
+
+              
+                var order = new CreateOrder(Guid.Parse("3a1f2c44-5f6d-4e5e-9b3f-21a7e8d1c001"), 2, new Random().Next(0, 1000), paymentMethods[randomNumber]);
                 await bus.Publish(order);
 
                 return Results.Accepted();

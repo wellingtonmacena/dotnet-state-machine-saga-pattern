@@ -30,5 +30,10 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Library.MessagingContracts\Library.MessagingContracts.csproj" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Models\Enums\" />
+	  <Folder Include="Handlers\" />
+	</ItemGroup>
 	
 </Project>

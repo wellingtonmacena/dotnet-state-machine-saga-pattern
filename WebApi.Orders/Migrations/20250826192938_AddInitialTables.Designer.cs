@@ -12,7 +12,7 @@ using WebApi.Orders;
 namespace WebApi.Orders.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250826185610_AddInitialTables")]
+    [Migration("20250826192938_AddInitialTables")]
     partial class AddInitialTables
     {
         /// <inheritdoc />
@@ -35,6 +35,12 @@ namespace WebApi.Orders.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
+
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("payment_method");
 
                     b.Property<Guid>("ProductId")
                         .HasMaxLength(100)

@@ -16,7 +16,7 @@ namespace WebApi.Orders
             // Se quiser gerar o GUID no banco automaticamente
             builder.Property(o => o.Id)
                    .HasColumnName("id");
-           
+
             // Outras colunas
             builder.Property(o => o.ProductId)
                    .HasColumnName("product_id")
@@ -29,10 +29,16 @@ namespace WebApi.Orders
                    .IsRequired();
 
             builder.Property(s => s.Status)
-       .HasColumnName("status")
- 
-       .HasMaxLength(100)
-       .IsRequired();
+                    .HasColumnName("status")
+                   .HasMaxLength(100)
+                   .HasConversion<string>()
+                    .IsRequired();
+
+            builder.Property(s => s.PaymentMethod)
+                    .HasColumnName("payment_method")
+                    .HasConversion<string>()
+                    .HasMaxLength(100)
+                    .IsRequired();
 
             builder.Property(o => o.TotalPrice)
                    .HasColumnName("total_price")
@@ -44,7 +50,7 @@ namespace WebApi.Orders
                    .IsRequired();
             builder.Property(o => o.UpdatedAt)
               .HasColumnName("updated_at");
-              
+
         }
     }
 }

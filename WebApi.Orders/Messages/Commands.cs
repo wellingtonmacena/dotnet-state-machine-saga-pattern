@@ -1,15 +1,18 @@
-﻿namespace WebApi.Orders.Messages
+﻿using Library.MessagingContracts.Messages;
+
+namespace WebApi.Orders.Messages
 {
     // Pedido
-    public record CreateOrder(Guid ProductId, int Quantity, decimal TotalPrice);
+    public record CreateOrder(Guid ProductId, int Quantity, decimal TotalPrice, PaymentMethod PaymentMethod);
 
     // Estoque
     public record ReserveStock(Guid OrderId, Guid ProductId, int Quantity);
+    public record ReturnStock(Guid OrderId, Guid ProductId, int Quantity);
 
     public record CancelStockReservation(Guid OrderId, string Reason = "");
 
     // Pagamento
-    public record ProcessPayment(Guid OrderId, decimal Amount, string PaymentMethod = "");
+    public record ProcessPayment(Guid OrderId, decimal Amount, PaymentMethod PaymentMethod);
 
     public record RefundPayment(Guid OrderId, decimal Amount, string Reason = "");
 

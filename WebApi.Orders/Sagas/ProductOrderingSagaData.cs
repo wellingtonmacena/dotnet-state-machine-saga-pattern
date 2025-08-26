@@ -13,6 +13,8 @@ public class ProductOrderingSagaData : SagaStateMachineInstance
 
     // Estoque
     public DateTime? StockCheckedAt { get; set; }
+    public Guid ProductId { get;  set; }
+    public int Quantity { get;  set; }
 
     // Pagamento
     public decimal? AmountPaid { get; set; }
@@ -28,4 +30,5 @@ public class ProductOrderingSagaData : SagaStateMachineInstance
     public string? FailureReason { get; set; }
     public bool IsCanceled { get; set; }
     public bool IsCompleted { get; set; }
+
 }

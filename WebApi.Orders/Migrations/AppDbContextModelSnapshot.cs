@@ -33,6 +33,12 @@ namespace WebApi.Orders.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("payment_method");
+
                     b.Property<Guid>("ProductId")
                         .HasMaxLength(100)
                         .HasColumnType("uuid")

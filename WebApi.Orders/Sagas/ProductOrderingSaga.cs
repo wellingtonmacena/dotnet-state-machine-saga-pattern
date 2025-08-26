@@ -52,6 +52,8 @@ public class ProductOrderingSaga : MassTransitStateMachine<ProductOrderingSagaDa
                 {
                     ctx.Saga.OrderId = ctx.Message.OrderId;
                     ctx.Saga.CreatedAt = ctx.Message.CreatedAt;
+                    ctx.Saga.ProductId = ctx.Message.ProductId;
+                    ctx.Saga.Quantity = ctx.Message.Quantity;
                 })
                 .TransitionTo(OrderCreated)
                 .Publish(ctx => new ReserveStock(
@@ -64,7 +66,7 @@ public class ProductOrderingSaga : MassTransitStateMachine<ProductOrderingSagaDa
         // Verificação de estoque
         During(OrderCreated,
         When(ProductsAvailableChecked)
-            .Then(ctx => ctx.Saga.StockCheckedAt = ctx.Message.CheckedAt)
+            .Then(ctx => { ctx.Saga.StockCheckedAt = ctx.Message.CheckedAt; })
             .TransitionTo(ProductInStock),
 
         When(ProductsUnavailableChecked)
@@ -78,26 +80,26 @@ public class ProductOrderingSaga : MassTransitStateMachine<ProductOrderingSagaDa
     );
 
 
-        //// Pagamento
-        //During(ProductInStock,
-        //    When(PaymentProcessedSuccessful)
-        //        .Then(ctx =>
-        //        {
-        //            ctx.Saga.PaymentAt = ctx.Message.PaidAt;
-        //            ctx.Saga.AmountPaid = ctx.Message.Amount;
-        //        })
-        //        .TransitionTo(PaymentSuccessful),
+        // Pagamento
+        During(ProductInStock,
+            When(PaymentProcessedSuccessful)
+                .Then(ctx =>
+                {
+                    ctx.Saga.PaymentAt = ctx.Message.PaidAt;
+                    ctx.Saga.AmountPaid = ctx.Message.Amount;
+                })
+                .TransitionTo(PaymentSuccessful),
 
-        //    When(PaymentProcessedFailed)
-        //        .Then(ctx =>
-        //        {
-        //            ctx.Saga.PaymentFailedAt = ctx.Message.FailedAt;
-        //            ctx.Saga.FailureReason = ctx.Message.Reason;
-        //            ctx.Saga.IsCanceled = true;
-        //        })
-        //        .TransitionTo(PaymentFailed)
-        //        .Finalize()
-        //);
+            When(PaymentProcessedFailed)
+                .Then(ctx =>
+                {
+                    ctx.Saga.PaymentFailedAt = ctx.Message.FailedAt;
+                    ctx.Saga.FailureReason = ctx.Message.Reason;
+                    ctx.Saga.IsCanceled = true;
+                })
+                .TransitionTo(PaymentFailed)
+                .Publish(ctx => new ReturnStock(ctx.Saga.OrderId, ctx.Saga.ProductId, ctx.Saga.Quantity))
+        );
 
         //// Envio
         //During(PaymentSuccessful,
