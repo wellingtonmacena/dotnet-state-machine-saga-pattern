@@ -12,7 +12,7 @@ using WebApi.Orders;
 namespace WebApi.Orders.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250826192938_AddInitialTables")]
+    [Migration("20250826224253_AddInitialTables")]
     partial class AddInitialTables
     {
         /// <inheritdoc />
@@ -76,7 +76,7 @@ namespace WebApi.Orders.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<decimal?>("AmountPaid")
+                    b.Property<decimal>("AmountPaid")
                         .HasColumnType("numeric");
 
                     b.Property<DateTime>("CreatedAt")
@@ -101,6 +101,9 @@ namespace WebApi.Orders.Migrations
                     b.Property<bool>("IsCompleted")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsRefunded")
+                        .HasColumnType("boolean");
+
                     b.Property<Guid>("OrderId")
                         .HasColumnType("uuid");
 
@@ -109,6 +112,15 @@ namespace WebApi.Orders.Migrations
 
                     b.Property<DateTime?>("PaymentFailedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("PaymentMethod")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("ShippedAt")
                         .HasColumnType("timestamp with time zone");

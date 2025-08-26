@@ -39,6 +39,7 @@ namespace WebApi.Orders
                     .EntityFrameworkRepository(r =>
                     {
                         r.ExistingDbContext<AppDbContext>();
+                        
                         r.ConcurrencyMode = ConcurrencyMode.Pessimistic; // or use Optimistic, which requires a RowVersion column
                         r.UsePostgres();
                     });

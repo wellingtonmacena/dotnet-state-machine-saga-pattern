@@ -6,8 +6,9 @@
             Pending,
             Completed,
             Failed,
-            Cancelled
-        }
+            Cancelled,
+        Refunded
+    }
 
         public enum PaymentMethod
         {

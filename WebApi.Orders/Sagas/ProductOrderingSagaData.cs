@@ -1,4 +1,5 @@
-﻿using MassTransit;
+﻿using Library.MessagingContracts.Messages;
+using MassTransit;
 
 namespace WebApi.Orders.Sagas;
 
@@ -9,6 +10,7 @@ public class ProductOrderingSagaData : SagaStateMachineInstance
 
     // Pedido
     public Guid OrderId { get; set; }
+    public PaymentMethod PaymentMethod { get; set; }
     public DateTime CreatedAt { get; set; }
 
     // Estoque
@@ -17,7 +19,7 @@ public class ProductOrderingSagaData : SagaStateMachineInstance
     public int Quantity { get;  set; }
 
     // Pagamento
-    public decimal? AmountPaid { get; set; }
+    public decimal AmountPaid { get; set; }
     public DateTime? PaymentAt { get; set; }
     public DateTime? PaymentFailedAt { get; set; }
 
@@ -29,6 +31,7 @@ public class ProductOrderingSagaData : SagaStateMachineInstance
     // Status
     public string? FailureReason { get; set; }
     public bool IsCanceled { get; set; }
+    public bool IsRefunded { get; set; }
     public bool IsCompleted { get; set; }
 
 }

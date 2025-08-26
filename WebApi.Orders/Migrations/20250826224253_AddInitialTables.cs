@@ -36,9 +36,12 @@ namespace WebApi.Orders.Migrations
                     CorrelationId = table.Column<Guid>(type: "uuid", nullable: false),
                     CurrentState = table.Column<string>(type: "text", nullable: false),
                     OrderId = table.Column<Guid>(type: "uuid", nullable: false),
+                    PaymentMethod = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     StockCheckedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    AmountPaid = table.Column<decimal>(type: "numeric", nullable: true),
+                    ProductId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Quantity = table.Column<int>(type: "integer", nullable: false),
+                    AmountPaid = table.Column<decimal>(type: "numeric", nullable: false),
                     PaymentAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     PaymentFailedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     ShippedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -46,6 +49,7 @@ namespace WebApi.Orders.Migrations
                     DeliveryFailedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     FailureReason = table.Column<string>(type: "text", nullable: true),
                     IsCanceled = table.Column<bool>(type: "boolean", nullable: false),
+                    IsRefunded = table.Column<bool>(type: "boolean", nullable: false),
                     IsCompleted = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>

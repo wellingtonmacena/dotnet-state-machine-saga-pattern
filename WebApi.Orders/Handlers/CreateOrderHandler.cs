@@ -24,8 +24,10 @@ namespace WebApi.Orders.Handlers
             {
                 OrderId = createdOrder.Entity.Id,
                 ProductId = createdOrder.Entity.ProductId,
+                TotalPrice = createdOrder.Entity.TotalPrice,
                 Quantity = createdOrder.Entity.Quantity,
-                CreatedAt = createdOrder.Entity.CreatedAt
+                CreatedAt = createdOrder.Entity.CreatedAt,
+                PaymentMethod = createdOrder.Entity.PaymentMethod,
             });
         }
     }

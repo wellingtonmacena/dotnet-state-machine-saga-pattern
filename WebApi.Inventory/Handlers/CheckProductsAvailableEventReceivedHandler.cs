@@ -1,5 +1,6 @@
 ﻿using Library.MessagingContracts.Messages;
 using MassTransit;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebApi.Inventory.Handlers
 {
@@ -11,7 +12,10 @@ namespace WebApi.Inventory.Handlers
 
             if (isAvailable)
             {
-                Models.StockItem? stockItem = appDbContext.StockItems.FirstOrDefault(p => p.ProductId == context.Message.ProductId);
+                Models.StockItem? stockItem = appDbContext.StockItems
+                    .Include(si => si.Product)
+                    .FirstOrDefault(p => p.ProductId == context.Message.ProductId);
+
                 stockItem.Quantity -= context.Message.Quantity;
                 appDbContext.StockItems.Update(stockItem);
                 await appDbContext.SaveChangesAsync();
@@ -19,19 +23,23 @@ namespace WebApi.Inventory.Handlers
                 await context.Publish(new ProductsAvailableChecked
                 {
                     OrderId = context.Message.OrderId,
-                    CheckedAt = DateTime.UtcNow
+                    CheckedAt = DateTime.UtcNow,
+                    Quantity = context.Message.Quantity,
+                    ProductId = context.Message.ProductId,
+                    TotalPrice = stockItem.Product.Price * context.Message.Quantity
+
                 });
             }
             else
             {
-              
+
                 await context.Publish(new ProductsUnavailableChecked
                 {
                     OrderId = context.Message.OrderId,
-                    CheckedAt = DateTime.UtcNow
+                    CheckedAt = DateTime.UtcNow,
                 });
 
-               
+
             }
         }
     }

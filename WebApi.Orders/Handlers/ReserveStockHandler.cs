@@ -14,7 +14,7 @@ namespace WebApi.Orders.Handlers
                 OrderId = context.Message.OrderId,
                 ProductId = context.Message.ProductId,
                 Quantity = context.Message.Quantity,
-                CheckedAt = DateTime.UtcNow
+                CheckedAt = DateTime.UtcNow,
             }, context.CancellationToken);
 
             Order? order = appDbContext.Orders.FirstOrDefault(o => o.Id == context.Message.OrderId);
