@@ -9,7 +9,7 @@ namespace WebApi.Orders.Handlers
         {
             Order? order = appDbContext.Orders.FirstOrDefault(o => o.Id == context.Message.OrderId);
 
-            order.Status = EStatus.StockReservationFailed;
+            order.Status = EStatus.StockUnavailable;
             appDbContext.Update(order);
             await appDbContext.SaveChangesAsync();
         }

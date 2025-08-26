@@ -1,10 +1,10 @@
 ﻿namespace WebApi.Orders.Messages
 {
     // Pedido
-    public record CreateOrder(Guid CartId, Guid CustomerId, decimal TotalPrice);
+    public record CreateOrder(Guid ProductId, int Quantity, decimal TotalPrice);
 
     // Estoque
-    public record ReserveStock(Guid OrderId, Guid CartId);
+    public record ReserveStock(Guid OrderId, Guid ProductId, int Quantity);
 
     public record CancelStockReservation(Guid OrderId, string Reason = "");
 

@@ -18,14 +18,14 @@ namespace WebApi.Orders
                    .HasColumnName("id");
            
             // Outras colunas
-            builder.Property(o => o.CartId)
-                   .HasColumnName("card_id")
+            builder.Property(o => o.ProductId)
+                   .HasColumnName("product_id")
                    .HasMaxLength(100)
                    .IsRequired();
 
-            builder.Property(o => o.CustomerId)
-                   .HasColumnName("customer_id")
-                   .HasMaxLength(100)
+            builder.Property(o => o.Quantity)
+                   .HasColumnName("quantity")
+                   .HasColumnType("integer")
                    .IsRequired();
 
             builder.Property(s => s.Status)

@@ -10,8 +10,8 @@ namespace WebApi.Orders.Handlers
         {
             Order order = new()
             {
-                CartId = context.Message.CartId,
-                CustomerId = context.Message.CustomerId,
+                ProductId = context.Message.ProductId,
+                Quantity = context.Message.Quantity,
                 TotalPrice = context.Message.TotalPrice,
                 Status = EStatus.Created
             };
@@ -22,6 +22,8 @@ namespace WebApi.Orders.Handlers
             await context.Publish(new OrderCreated
             {
                 OrderId = createdOrder.Entity.Id,
+                ProductId = createdOrder.Entity.ProductId,
+                Quantity = createdOrder.Entity.Quantity,
                 CreatedAt = createdOrder.Entity.CreatedAt
             });
         }

@@ -5,7 +5,8 @@
     public record OrderCreated
     {
         public Guid OrderId { get; init; }
-        public Guid CartId { get; init; }
+        public Guid ProductId { get; init; }
+        public int Quantity { get; init; }
         public DateTime CreatedAt { get; init; }
     }
 
@@ -14,6 +15,8 @@
     public record CheckProductsAvailableEventReceived
     {
         public Guid OrderId { get; init; }
+        public Guid ProductId { get; init; }
+        public int Quantity { get; init; }
         public DateTime CheckedAt { get; init; }
     }
 

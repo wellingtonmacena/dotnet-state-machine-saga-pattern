@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace WebApi.Orders.Migrations
 {
     /// <inheritdoc />
-    public partial class initialTables : Migration
+    public partial class AddInitialTables : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,8 +16,8 @@ namespace WebApi.Orders.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
-                    card_id = table.Column<Guid>(type: "uuid", maxLength: 100, nullable: false),
-                    customer_id = table.Column<Guid>(type: "uuid", maxLength: 100, nullable: false),
+                    product_id = table.Column<Guid>(type: "uuid", maxLength: 100, nullable: false),
+                    quantity = table.Column<int>(type: "integer", nullable: false),
                     total_price = table.Column<decimal>(type: "decimal", nullable: false),
                     status = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),

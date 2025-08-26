@@ -12,8 +12,8 @@ using WebApi.Orders;
 namespace WebApi.Orders.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250826005002_initialTables")]
-    partial class initialTables
+    [Migration("20250826183515_AddInitialTables")]
+    partial class AddInitialTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,19 +32,18 @@ namespace WebApi.Orders.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<Guid>("CartId")
-                        .HasMaxLength(100)
-                        .HasColumnType("uuid")
-                        .HasColumnName("card_id");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
-                    b.Property<Guid>("CustomerId")
+                    b.Property<Guid>("ProductId")
                         .HasMaxLength(100)
                         .HasColumnType("uuid")
-                        .HasColumnName("customer_id");
+                        .HasColumnName("product_id");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer")
+                        .HasColumnName("quantity");
 
                     b.Property<string>("Status")
                         .IsRequired()

@@ -2,8 +2,8 @@
 {
     public class Order: Entity
     {
-        public Guid CartId  { get; set; }
-        public Guid CustomerId { get; set; }
+        public Guid ProductId { get; init; }
+        public int Quantity { get; init; }
         public decimal TotalPrice { get; set; }
         public EStatus Status { get; set; }
     }

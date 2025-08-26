@@ -1,7 +1,6 @@
 
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using WebApi.Inventory.Consumer;
 
 namespace WebApi.Inventory
 {
@@ -23,8 +22,9 @@ namespace WebApi.Inventory
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            builder.Services.AddDbContext<AppDbContext>(options => {
-            
+            builder.Services.AddDbContext<AppDbContext>(options =>
+            {
+
                 options.UseNpgsql(
                         builder.Configuration.GetConnectionString("DbConnectionString"));
                 options.EnableSensitiveDataLogging();
@@ -34,7 +34,7 @@ namespace WebApi.Inventory
             {
                 busConfigurator.SetKebabCaseEndpointNameFormatter();
 
-                busConfigurator.AddConsumers(typeof(Program).Assembly);  
+                busConfigurator.AddConsumers(typeof(Program).Assembly);
 
                 busConfigurator.UsingRabbitMq((context, cfg) =>
                 {
@@ -59,7 +59,11 @@ namespace WebApi.Inventory
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
- 
+                using IServiceScope scope = app.Services.CreateScope();
+                await using AppDbContext dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                await dbContext.Database.MigrateAsync();
+                await dbContext.Database.EnsureCreatedAsync();
+
             }
 
             _ = app.UseSwagger();

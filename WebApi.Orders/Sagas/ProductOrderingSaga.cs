@@ -56,7 +56,8 @@ public class ProductOrderingSaga : MassTransitStateMachine<ProductOrderingSagaDa
                 .TransitionTo(OrderCreated)
                 .Publish(ctx => new ReserveStock(
                     ctx.Message.OrderId,
-                    ctx.Message.CartId
+                    ctx.Message.ProductId,
+                   ctx.Message.Quantity
                 ))
         );
 

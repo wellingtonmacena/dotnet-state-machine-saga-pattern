@@ -4,7 +4,7 @@
     {
         Created,
         StockReserved,
-        StockReservationFailed,
+        StockUnavailable,
         PaymentProcessed,
         PaymentFailed,
         Shipped,
