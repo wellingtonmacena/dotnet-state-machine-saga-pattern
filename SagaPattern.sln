@@ -11,15 +11,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi.Payments", "WebApi.P
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi.Shipments", "WebApi.Shipments\WebApi.Shipments.csproj", "{C1B91AE2-77EE-43C1-BFF7-9F6125541EC8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Library.MessagingContracts", "Library.MessagingContracts\Library.MessagingContracts.csproj", "{0A41B36E-D37E-4488-9DBB-6D3CFFD230CA}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution_items", "solution_items", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 	ProjectSection(SolutionItems) = preProject
-		..\.gitignore = ..\.gitignore
-		..\docker-compose.yaml = ..\docker-compose.yaml
-		..\LICENSE = ..\LICENSE
-		..\README.md = ..\README.md
+		.dockerignore = .dockerignore
+		.gitignore = .gitignore
+		docker-compose.yaml = docker-compose.yaml
+		LICENSE = LICENSE
+		README.md = README.md
 	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Library.MessagingContracts", "Library.MessagingContracts\Library.MessagingContracts.csproj", "{0A41B36E-D37E-4488-9DBB-6D3CFFD230CA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

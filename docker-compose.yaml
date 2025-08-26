@@ -4,7 +4,7 @@ services:
   postgres:
     image: postgres:15
     container_name: postgres_saga_pattern
-    restart: always
+    restart: no
     environment:
       POSTGRES_DB: postgres_saga_pattern
       POSTGRES_USER: user
@@ -17,7 +17,7 @@ services:
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq_saga_pattern
-    restart: always
+    restart: no
     ports:
       - "5672:5672"   # conexão das apps
       - "15672:15672" # painel web
