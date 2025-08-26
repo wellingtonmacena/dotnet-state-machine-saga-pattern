@@ -5,5 +5,6 @@
         public Guid CartId  { get; set; }
         public Guid CustomerId { get; set; }
         public decimal TotalPrice { get; set; }
+        public EStatus Status { get; set; }
     }
 }

@@ -43,6 +43,12 @@ namespace WebApi.Orders.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("customer_id");
 
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("status");
+
                     b.Property<decimal>("TotalPrice")
                         .HasColumnType("decimal")
                         .HasColumnName("total_price");

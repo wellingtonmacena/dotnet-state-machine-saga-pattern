@@ -12,8 +12,8 @@ using WebApi.Orders;
 namespace WebApi.Orders.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250825213514_initialSagaTable")]
-    partial class initialSagaTable
+    [Migration("20250826005002_initialTables")]
+    partial class initialTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -45,6 +45,12 @@ namespace WebApi.Orders.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("uuid")
                         .HasColumnName("customer_id");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("status");
 
                     b.Property<decimal>("TotalPrice")
                         .HasColumnType("decimal")

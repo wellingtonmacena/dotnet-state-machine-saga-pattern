@@ -62,70 +62,70 @@ public class ProductOrderingSaga : MassTransitStateMachine<ProductOrderingSagaDa
 
         // Verificação de estoque
         During(OrderCreated,
-            When(ProductsAvailableChecked)
-                .Then(ctx => ctx.Saga.StockCheckedAt = ctx.Message.CheckedAt)
-                .TransitionTo(ProductInStock)
-                .Finalize(),
+        When(ProductsAvailableChecked)
+            .Then(ctx => ctx.Saga.StockCheckedAt = ctx.Message.CheckedAt)
+            .TransitionTo(ProductInStock),
 
-            When(ProductsUnavailableChecked)
-                .Then(ctx =>
-                {
-                    ctx.Saga.StockCheckedAt = ctx.Message.CheckedAt;
-                    ctx.Saga.IsCanceled = true;
-                })
-                .TransitionTo(ProductOutOfStock)
-                .Finalize()
-        );
+        When(ProductsUnavailableChecked)
+            .Then(ctx =>
+            {
+                ctx.Saga.StockCheckedAt = ctx.Message.CheckedAt;
+                ctx.Saga.IsCanceled = true;
+            })
+            .TransitionTo(ProductOutOfStock)
+            .Publish(ctx => new CancelStockReservation(ctx.Saga.OrderId))
+    );
 
-        // Pagamento
-        During(ProductInStock,
-            When(PaymentProcessedSuccessful)
-                .Then(ctx =>
-                {
-                    ctx.Saga.PaymentAt = ctx.Message.PaidAt;
-                    ctx.Saga.AmountPaid = ctx.Message.Amount;
-                })
-                .TransitionTo(PaymentSuccessful),
 
-            When(PaymentProcessedFailed)
-                .Then(ctx =>
-                {
-                    ctx.Saga.PaymentFailedAt = ctx.Message.FailedAt;
-                    ctx.Saga.FailureReason = ctx.Message.Reason;
-                    ctx.Saga.IsCanceled = true;
-                })
-                .TransitionTo(PaymentFailed)
-                .Finalize()
-        );
+        //// Pagamento
+        //During(ProductInStock,
+        //    When(PaymentProcessedSuccessful)
+        //        .Then(ctx =>
+        //        {
+        //            ctx.Saga.PaymentAt = ctx.Message.PaidAt;
+        //            ctx.Saga.AmountPaid = ctx.Message.Amount;
+        //        })
+        //        .TransitionTo(PaymentSuccessful),
 
-        // Envio
-        During(PaymentSuccessful,
-            When(OrderShippedEvent)
-                .Then(ctx => ctx.Saga.ShippedAt = ctx.Message.ShippedAt)
-                .TransitionTo(OrderShipped)
-        );
+        //    When(PaymentProcessedFailed)
+        //        .Then(ctx =>
+        //        {
+        //            ctx.Saga.PaymentFailedAt = ctx.Message.FailedAt;
+        //            ctx.Saga.FailureReason = ctx.Message.Reason;
+        //            ctx.Saga.IsCanceled = true;
+        //        })
+        //        .TransitionTo(PaymentFailed)
+        //        .Finalize()
+        //);
 
-        // Entrega
-        During(OrderShipped,
-            When(OrderDeliveredEvent)
-                .Then(ctx =>
-                {
-                    ctx.Saga.DeliveredAt = ctx.Message.DeliveredAt;
-                    ctx.Saga.IsCompleted = true;
-                })
-                .TransitionTo(OrderDelivered)
-                .Finalize(),
+        //// Envio
+        //During(PaymentSuccessful,
+        //    When(OrderShippedEvent)
+        //        .Then(ctx => ctx.Saga.ShippedAt = ctx.Message.ShippedAt)
+        //        .TransitionTo(OrderShipped)
+        //);
 
-            When(DeliveryFailedEvent)
-                .Then(ctx =>
-                {
-                    ctx.Saga.DeliveryFailedAt = ctx.Message.FailedAt;
-                    ctx.Saga.FailureReason = ctx.Message.Reason;
-                    ctx.Saga.IsCanceled = true;
-                })
-                .TransitionTo(DeliveryFailed)
-                .Finalize()
-        );
+        //// Entrega
+        //During(OrderShipped,
+        //    When(OrderDeliveredEvent)
+        //        .Then(ctx =>
+        //        {
+        //            ctx.Saga.DeliveredAt = ctx.Message.DeliveredAt;
+        //            ctx.Saga.IsCompleted = true;
+        //        })
+        //        .TransitionTo(OrderDelivered)
+        //        .Finalize(),
+
+        //    When(DeliveryFailedEvent)
+        //        .Then(ctx =>
+        //        {
+        //            ctx.Saga.DeliveryFailedAt = ctx.Message.FailedAt;
+        //            ctx.Saga.FailureReason = ctx.Message.Reason;
+        //            ctx.Saga.IsCanceled = true;
+        //        })
+        //        .TransitionTo(DeliveryFailed)
+        //        .Finalize()
+        //);
 
         SetCompletedWhenFinalized();
     }

@@ -28,6 +28,12 @@ namespace WebApi.Orders
                    .HasMaxLength(100)
                    .IsRequired();
 
+            builder.Property(s => s.Status)
+       .HasColumnName("status")
+ 
+       .HasMaxLength(100)
+       .IsRequired();
+
             builder.Property(o => o.TotalPrice)
                    .HasColumnName("total_price")
                    .HasColumnType("decimal")

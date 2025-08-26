@@ -8,11 +8,14 @@ namespace WebApi.Orders.Handlers
     {
         public async Task Consume(ConsumeContext<ReserveStock> context)
         {
+           
             await publisher.Publish(new CheckProductsAvailableEventReceived
             {
                 OrderId = context.Message.OrderId,
                CheckedAt = DateTime.UtcNow
             }, context.CancellationToken);
+
+         
         }
     }
 }

@@ -14,6 +14,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> dbContextOptions) : DbC
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.Entity<ProductOrderingSagaData>().HasKey(s => s.CorrelationId);
+        modelBuilder.Entity<Order>().Property(s => s.Status).HasConversion<string>();
         modelBuilder.ApplyConfiguration(new OrderConfiguration()); 
     }
 
