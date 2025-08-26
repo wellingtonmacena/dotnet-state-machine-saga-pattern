@@ -13,7 +13,6 @@ namespace WebApi.Orders.Handlers
                 CartId = context.Message.CartId,
                 CustomerId = context.Message.CustomerId,
                 TotalPrice = context.Message.TotalPrice,
-
             };
 
             Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<Order> createdOrder = await appDbContext.Orders.AddAsync(order);

@@ -1,5 +1,6 @@
 ﻿using Library.MessagingContracts.Messages;
 using MassTransit;
+using WebApi.Orders.Messages;
 
 namespace WebApi.Orders.Sagas;
 
@@ -53,13 +54,18 @@ public class ProductOrderingSaga : MassTransitStateMachine<ProductOrderingSagaDa
                     ctx.Saga.CreatedAt = ctx.Message.CreatedAt;
                 })
                 .TransitionTo(OrderCreated)
+                .Publish(ctx => new ReserveStock(
+                    ctx.Message.OrderId,
+                    ctx.Message.CartId
+                ))
         );
 
         // Verificação de estoque
         During(OrderCreated,
             When(ProductsAvailableChecked)
                 .Then(ctx => ctx.Saga.StockCheckedAt = ctx.Message.CheckedAt)
-                .TransitionTo(ProductInStock),
+                .TransitionTo(ProductInStock)
+                .Finalize(),
 
             When(ProductsUnavailableChecked)
                 .Then(ctx =>

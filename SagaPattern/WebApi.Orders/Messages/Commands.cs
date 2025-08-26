@@ -1,52 +1,20 @@
 ﻿namespace WebApi.Orders.Messages
 {
     // Pedido
-    public record CreateOrder
-    {
-        public Guid CartId { get; set; }
-        public Guid CustomerId { get; init; }
-        public decimal TotalPrice { get; init; }
-    }
+    public record CreateOrder(Guid CartId, Guid CustomerId, decimal TotalPrice);
 
     // Estoque
-    public record ReserveStock
-    {
-        public Guid OrderId { get; init; }
-        public int Quantity { get; init; }
-        public string ProductCode { get; init; } = string.Empty;
-    }
+    public record ReserveStock(Guid OrderId, Guid CartId);
 
-    public record CancelStockReservation
-    {
-        public Guid OrderId { get; init; }
-        public string Reason { get; init; } = string.Empty;
-    }
+    public record CancelStockReservation(Guid OrderId, string Reason = "");
 
     // Pagamento
-    public record ProcessPayment
-    {
-        public Guid OrderId { get; init; }
-        public decimal Amount { get; init; }
-        public string PaymentMethod { get; init; } = string.Empty;
-    }
+    public record ProcessPayment(Guid OrderId, decimal Amount, string PaymentMethod = "");
 
-    public record RefundPayment
-    {
-        public Guid OrderId { get; init; }
-        public decimal Amount { get; init; }
-        public string Reason { get; init; } = string.Empty;
-    }
+    public record RefundPayment(Guid OrderId, decimal Amount, string Reason = "");
 
     // Entrega
-    public record ShipOrder
-    {
-        public Guid OrderId { get; init; }
-        public string Address { get; init; } = string.Empty;
-    }
+    public record ShipOrder(Guid OrderId, string Address = "");
 
-    public record CancelDelivery
-    {
-        public Guid OrderId { get; init; }
-        public string Reason { get; init; } = string.Empty;
-    }
+    public record CancelDelivery(Guid OrderId, string Reason = "");
 }

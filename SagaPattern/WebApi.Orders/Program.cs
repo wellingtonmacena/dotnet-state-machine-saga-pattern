@@ -24,9 +24,13 @@ namespace WebApi.Orders
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            builder.Services.AddDbContext<AppDbContext>(options =>
+            builder.Services.AddDbContext<AppDbContext>(options => {
+
+                
                 options.UseNpgsql(
-                    builder.Configuration.GetConnectionString("DbConnectionString")));
+                        builder.Configuration.GetConnectionString("DbConnectionString"));
+                options.EnableSensitiveDataLogging();
+            });
 
             builder.Services.AddMassTransit(busConfigurator =>
             {
@@ -38,7 +42,7 @@ namespace WebApi.Orders
                     .EntityFrameworkRepository(r =>
                     {
                         r.ExistingDbContext<AppDbContext>();
-
+                        r.ConcurrencyMode = ConcurrencyMode.Pessimistic; // or use Optimistic, which requires a RowVersion column
                         r.UsePostgres();
                     });
 
@@ -91,7 +95,7 @@ namespace WebApi.Orders
 
             app.MapPost("/", async (AppDbContext appDbContext, IBus bus) =>
             {
-                var order = new CreateOrder() { CartId = Guid.NewGuid(), CustomerId = Guid.NewGuid(), TotalPrice = new Random().Next(0, 1000) };
+                var order = new CreateOrder(Guid.NewGuid(), Guid.NewGuid(), new Random().Next(0, 1000));
                 await bus.Publish(order);
 
                 return Results.Accepted();

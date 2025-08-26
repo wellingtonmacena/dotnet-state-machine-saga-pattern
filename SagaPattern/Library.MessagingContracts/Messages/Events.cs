@@ -5,10 +5,18 @@
     public record OrderCreated
     {
         public Guid OrderId { get; init; }
+        public Guid CartId { get; init; }
         public DateTime CreatedAt { get; init; }
     }
 
     // Estoque
+
+    public record CheckProductsAvailableEventReceived
+    {
+        public Guid OrderId { get; init; }
+        public DateTime CheckedAt { get; init; }
+    }
+
     public record ProductsAvailableChecked
     {
         public Guid OrderId { get; init; }
