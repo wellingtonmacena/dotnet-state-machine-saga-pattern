@@ -12,7 +12,7 @@ using WebApi.Orders;
 namespace WebApi.Orders.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250826183515_AddInitialTables")]
+    [Migration("20250826185610_AddInitialTables")]
     partial class AddInitialTables
     {
         /// <inheritdoc />

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace WebApi.Orders.Migrations
 {
     /// <inheritdoc />
-    public partial class AddInitialTables : Migration
+    public partial class AddInitialTables1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

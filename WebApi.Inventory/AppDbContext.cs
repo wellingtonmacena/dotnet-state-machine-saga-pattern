@@ -5,7 +5,6 @@ namespace WebApi.Inventory;
 
 public class AppDbContext(DbContextOptions<AppDbContext> dbContextOptions) : DbContext(dbContextOptions)
 {
-    public DbSet<Product> Products { get; set; }
     public DbSet<StockItem> StockItems { get; set; }
     public DbSet<Storage> Storages { get; set; }
 

@@ -53,7 +53,7 @@ namespace WebApi.Inventory.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Products");
+                    b.ToTable("Product");
 
                     b.HasData(
                         new

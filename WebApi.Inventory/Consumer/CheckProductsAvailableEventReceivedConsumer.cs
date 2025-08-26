@@ -3,13 +3,20 @@ using MassTransit;
 
 namespace WebApi.Inventory.Consumer
 {
-    public class CheckProductsAvailableEventReceivedConsumer() : IConsumer<CheckProductsAvailableEventReceived>
+    public class CheckProductsAvailableEventReceivedConsumer(AppDbContext appDbContext) : IConsumer<CheckProductsAvailableEventReceived>
     {
-        public Task Consume(ConsumeContext<CheckProductsAvailableEventReceived> context)
+        public async Task Consume(ConsumeContext<CheckProductsAvailableEventReceived> context)
         {
-            if(new Random().NextDouble() > 0.5)
+            bool isAvailable = appDbContext.StockItems.Any(si => si.ProductId == context.Message.ProductId && context.Message.Quantity <= si.Quantity);
+
+            if (isAvailable)
             {
-                return context.Publish(new ProductsAvailableChecked
+                Models.StockItem? stockItem = appDbContext.StockItems.FirstOrDefault(p => p.ProductId == context.Message.ProductId);
+                stockItem.Quantity -= context.Message.Quantity;
+                appDbContext.StockItems.Update(stockItem);
+                await appDbContext.SaveChangesAsync();
+
+                await context.Publish(new ProductsAvailableChecked
                 {
                     OrderId = context.Message.OrderId,
                     CheckedAt = DateTime.UtcNow
@@ -17,11 +24,14 @@ namespace WebApi.Inventory.Consumer
             }
             else
             {
-                return context.Publish(new ProductsUnavailableChecked
+              
+                await context.Publish(new ProductsUnavailableChecked
                 {
                     OrderId = context.Message.OrderId,
                     CheckedAt = DateTime.UtcNow
                 });
+
+               
             }
         }
     }
