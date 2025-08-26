@@ -1,5 +1,6 @@
 
 using MassTransit;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace WebApi.Inventory
@@ -78,9 +79,14 @@ namespace WebApi.Inventory
 
             app.UseAuthorization();
 
-            app.MapGet("/", async (AppDbContext appDbContext) =>
+            app.MapGet("/products", async (AppDbContext appDbContext) =>
             {
-                //return Results.Ok(await appDbContext.Orders.AsNoTracking().ToListAsync());
+                return Results.Ok(await appDbContext.Products.AsNoTracking().ToListAsync());
+            });
+
+            app.MapGet("/products/{id}", async ([FromRoute] Guid id ,AppDbContext appDbContext) =>
+            {
+                return Results.Ok(await appDbContext.Products.FirstOrDefaultAsync(i => i.Id.Equals(id)));
             });
 
             app.MapPost("/", async (AppDbContext appDbContext, IBus bus) =>

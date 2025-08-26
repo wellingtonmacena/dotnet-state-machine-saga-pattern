@@ -74,6 +74,10 @@ namespace WebApi.Orders
                 options.SerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
             });
 
+            builder.Services.AddHttpClient("InventoryClient", client =>
+            {
+                client.BaseAddress = new Uri("https://localhost:7016/");              
+            });
 
             WebApplication app = builder.Build();
 
@@ -110,7 +114,7 @@ namespace WebApi.Orders
                 var randomNumber = new Random().Next(0, paymentMethods.Length - 1);
 
               
-                var order = new CreateOrder(Guid.Parse("3a1f2c44-5f6d-4e5e-9b3f-21a7e8d1c001"), 2, new Random().Next(0, 1000), paymentMethods[randomNumber]);
+                var order = new CreateOrder(Guid.Parse("3a1f2c44-5f6d-4e5e-9b3f-21a7e8d1c001"), 2, paymentMethods[randomNumber]);
                 await bus.Publish(order);
 
                 return Results.Accepted();

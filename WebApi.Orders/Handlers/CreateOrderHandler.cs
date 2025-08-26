@@ -1,20 +1,31 @@
 ﻿using Library.MessagingContracts.Messages;
 using MassTransit;
+using WebApi.Orders.Dto;
 using WebApi.Orders.Messages;
 
 namespace WebApi.Orders.Handlers
 {
-    public class CreateOrderHandler(AppDbContext appDbContext) : IConsumer<CreateOrder>
+    public class CreateOrderHandler(AppDbContext appDbContext, IHttpClientFactory _httpClientFactory) : IConsumer<CreateOrder>
     {
         public async Task Consume(ConsumeContext<CreateOrder> context)
         {
+            HttpClient client = _httpClientFactory.CreateClient("InventoryClient");
+            HttpResponseMessage response = await client.GetAsync($"/products/{context.Message.ProductId}");
+
+            if(response.IsSuccessStatusCode == false)
+            {
+                throw new Exception("Product not found");
+            }
+
+            var product = await response.Content.ReadFromJsonAsync<ProductDto>();
+
             Order order = new()
             {
                 ProductId = context.Message.ProductId,
                 Quantity = context.Message.Quantity,
-                TotalPrice = context.Message.TotalPrice,
                 Status = EStatus.Created,
-                PaymentMethod = context.Message.PaymentMethod
+                PaymentMethod = context.Message.PaymentMethod,
+                TotalPrice = product.Price * context.Message.Quantity,
             };
 
             Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<Order> createdOrder = await appDbContext.Orders.AddAsync(order);

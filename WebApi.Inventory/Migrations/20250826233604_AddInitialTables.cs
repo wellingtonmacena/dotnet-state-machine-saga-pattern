@@ -8,13 +8,13 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace WebApi.Inventory.Migrations
 {
     /// <inheritdoc />
-    public partial class AddInventoryTables : Migration
+    public partial class AddInitialTables : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Product",
+                name: "Products",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -27,7 +27,7 @@ namespace WebApi.Inventory.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Product", x => x.Id);
+                    table.PrimaryKey("PK_Products", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -59,9 +59,9 @@ namespace WebApi.Inventory.Migrations
                 {
                     table.PrimaryKey("PK_StockItems", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_StockItems_Product_ProductId",
+                        name: "FK_StockItems_Products_ProductId",
                         column: x => x.ProductId,
-                        principalTable: "Product",
+                        principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -73,7 +73,7 @@ namespace WebApi.Inventory.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "Product",
+                table: "Products",
                 columns: new[] { "Id", "CreatedAt", "Description", "Manufacturer", "Name", "Price", "UpdatedAt" },
                 values: new object[,]
                 {
@@ -115,7 +115,7 @@ namespace WebApi.Inventory.Migrations
                 name: "StockItems");
 
             migrationBuilder.DropTable(
-                name: "Product");
+                name: "Products");
 
             migrationBuilder.DropTable(
                 name: "Storages");

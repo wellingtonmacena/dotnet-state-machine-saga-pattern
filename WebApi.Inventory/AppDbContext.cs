@@ -7,6 +7,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> dbContextOptions) : DbC
 {
     public DbSet<StockItem> StockItems { get; set; }
     public DbSet<Storage> Storages { get; set; }
+    public DbSet<Product> Products { get; internal set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

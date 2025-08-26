@@ -3,7 +3,7 @@
 namespace WebApi.Orders.Messages
 {
     // Pedido
-    public record CreateOrder(Guid ProductId, int Quantity, decimal TotalPrice, PaymentMethod PaymentMethod);
+    public record CreateOrder(Guid ProductId, int Quantity, PaymentMethod PaymentMethod);
 
     // Estoque
     public record ReserveStock(Guid OrderId, Guid ProductId, int Quantity);

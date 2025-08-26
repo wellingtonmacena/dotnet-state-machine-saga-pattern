@@ -12,8 +12,8 @@ using WebApi.Inventory;
 namespace WebApi.Inventory.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250826185630_AddInventoryTables")]
-    partial class AddInventoryTables
+    [Migration("20250826233604_AddInitialTables")]
+    partial class AddInitialTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -56,7 +56,7 @@ namespace WebApi.Inventory.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Product");
+                    b.ToTable("Products");
 
                     b.HasData(
                         new
