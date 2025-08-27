@@ -4,16 +4,10 @@ using WebApi.Orders.Messages;
 
 namespace WebApi.Orders.Handlers
 {
-    public class ReserveStockCommandHandler(IPublishEndpoint publisher, AppDbContext appDbContext) : IConsumer<ReserveStockCommand>
+    public class ReserveStockCommandHandler(IPublishEndpoint publisher) : IConsumer<ReserveStockCommand>
     {
         public async Task Consume(ConsumeContext<ReserveStockCommand> context)
         {
-            Order? order = appDbContext.Orders.FirstOrDefault(o => o.Id == context.Message.OrderId);
-
-            order.Status = EStatus.StockReserved;
-            appDbContext.Update(order);
-            await appDbContext.SaveChangesAsync();
-
             await publisher.Publish(new InventoryCheckPerformedEvent
             {
                 OrderId = context.Message.OrderId,
@@ -21,7 +15,6 @@ namespace WebApi.Orders.Handlers
                 Quantity = context.Message.Quantity,
                 CheckedAt = DateTime.UtcNow,
             }, context.CancellationToken);
-
         }
     }
 }

@@ -98,14 +98,12 @@
     public record ShipmentDeliveredEvent
     {
         public Guid OrderId { get; init; }
-        public string Address { get; init; } = string.Empty;
         public DateTime DeliveredAt { get; init; }
     }
 
     public record ShipmentFailedEvent
     {
         public Guid OrderId { get; init; }
-        public string Address { get; init; } = string.Empty;
         public string Reason { get; init; } = string.Empty;
         public DateTime FailedAt { get; init; }
     }

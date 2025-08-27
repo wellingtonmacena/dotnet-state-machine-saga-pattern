@@ -1,6 +1,8 @@
 
 using MassTransit;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WebApi.Shipments.Messages;
 
 namespace WebApi.Shipments
 {
@@ -82,6 +84,15 @@ namespace WebApi.Shipments
             {
                 return Results.Ok(await appDbContext.Shipments.AsNoTracking().ToListAsync());
             });
+
+            app.MapPost("/shipments/delivery/{orderId}", async ([FromRoute] Guid orderId, AppDbContext appDbContext, IBus bus) =>
+            {
+                DeliverPackageCommand order = new(orderId);
+                await bus.Publish(order);
+
+                return Results.Accepted();
+            });
+
 
             app.MapPost("/", async (AppDbContext appDbContext, IBus bus) =>
             {

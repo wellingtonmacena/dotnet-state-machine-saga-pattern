@@ -16,12 +16,6 @@ namespace WebApi.Orders.Handlers
                 Amount = context.Message.Amount,
             };
 
-            Order? order = appDbContext.Orders.FirstOrDefault(o => o.Id == context.Message.OrderId);
-
-            order.Status = EStatus.PaymentProcessed;
-            appDbContext.Update(order);
-            await appDbContext.SaveChangesAsync();
-
             await context.Publish(processPaymentEventReceived);
         }
     }

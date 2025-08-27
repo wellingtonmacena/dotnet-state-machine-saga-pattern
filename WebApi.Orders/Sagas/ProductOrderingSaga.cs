@@ -8,6 +8,7 @@ public class ProductOrderingSaga : MassTransitStateMachine<ProductOrderingSagaDa
 {
     // States
     public State OrderCreated { get; set; }
+
     public State ProductInStock { get; set; }
     public State ProductOutOfStock { get; set; }
 
@@ -20,6 +21,7 @@ public class ProductOrderingSaga : MassTransitStateMachine<ProductOrderingSagaDa
 
     // Events
     public Event<OrderCreatedEvent> OrderCreatedEvent { get; set; }
+
     public Event<InventoryReservedEvent> InventoryReservedEvent { get; set; }
     public Event<InventoryOutOfStockEvent> InventoryOutOfStockEvent { get; set; }
 
@@ -36,10 +38,13 @@ public class ProductOrderingSaga : MassTransitStateMachine<ProductOrderingSagaDa
 
         // correlaciona pelo OrderId
         Event(() => OrderCreatedEvent, e => e.CorrelateById(m => m.Message.OrderId));
+
         Event(() => InventoryReservedEvent, e => e.CorrelateById(m => m.Message.OrderId));
         Event(() => InventoryOutOfStockEvent, e => e.CorrelateById(m => m.Message.OrderId));
+
         Event(() => PaymentSucceededEvent, e => e.CorrelateById(m => m.Message.OrderId));
         Event(() => PaymentFailedEvent, e => e.CorrelateById(m => m.Message.OrderId));
+
         Event(() => ShipmentDispatchedEvent, e => e.CorrelateById(m => m.Message.OrderId));
         Event(() => ShipmentDeliveredEvent, e => e.CorrelateById(m => m.Message.OrderId));
         Event(() => ShipmentFailedEvent, e => e.CorrelateById(m => m.Message.OrderId));
@@ -70,14 +75,14 @@ public class ProductOrderingSaga : MassTransitStateMachine<ProductOrderingSagaDa
             .Then(ctx =>
             {
                 ctx.Saga.StockCheckedAt = ctx.Message.CheckedAt;
-
             })
             .TransitionTo(ProductInStock)
             .Publish(ctx => new ProcessPaymentCommand(
                     ctx.Message.OrderId,
                     ctx.Message.TotalPrice,
                     ctx.Saga.PaymentMethod
-                )),
+                ))
+            ,
 
         When(InventoryOutOfStockEvent)
             .Then(ctx =>
@@ -100,7 +105,7 @@ public class ProductOrderingSaga : MassTransitStateMachine<ProductOrderingSagaDa
                 .TransitionTo(PaymentSuccessful)
                 .Publish(ctx => new ShipOrderCommand(
                     ctx.Message.OrderId,
-                    ctx.Saga.Address              
+                    ctx.Saga.Address
                 )),
 
             When(PaymentFailedEvent)
@@ -112,7 +117,7 @@ public class ProductOrderingSaga : MassTransitStateMachine<ProductOrderingSagaDa
                 })
                 .TransitionTo(PaymentFailed)
                 .Publish(ctx => new ReturnStockCommand(ctx.Saga.OrderId, ctx.Saga.ProductId, ctx.Saga.Quantity))
-               // .Publish(ctx => new RefundPayment(ctx.Saga.OrderId, ctx.Saga.Quantity , ctx.Saga.FailureReason))
+        // .Publish(ctx => new RefundPayment(ctx.Saga.OrderId, ctx.Saga.Quantity , ctx.Saga.FailureReason))
         );
 
         // Envio
@@ -122,27 +127,27 @@ public class ProductOrderingSaga : MassTransitStateMachine<ProductOrderingSagaDa
                 .TransitionTo(OrderShipped)
         );
 
-        //// Entrega
-        //During(OrderShipped,
-        //    When(OrderDeliveredEvent)
-        //        .Then(ctx =>
-        //        {
-        //            ctx.Saga.DeliveredAt = ctx.Message.DeliveredAt;
-        //            ctx.Saga.IsCompleted = true;
-        //        })
-        //        .TransitionTo(OrderDelivered)
-        //        .Finalize(),
+        // Entrega
+        During(OrderShipped,
+            When(ShipmentDeliveredEvent)
+                .Then(ctx =>
+                {
+                    ctx.Saga.DeliveredAt = ctx.Message.DeliveredAt;
+                    ctx.Saga.IsCompleted = true;
+                })
+                .TransitionTo(OrderDelivered)
+                .Finalize(),
 
-        //    When(DeliveryFailedEvent)
-        //        .Then(ctx =>
-        //        {
-        //            ctx.Saga.DeliveryFailedAt = ctx.Message.FailedAt;
-        //            ctx.Saga.FailureReason = ctx.Message.Reason;
-        //            ctx.Saga.IsCanceled = true;
-        //        })
-        //        .TransitionTo(DeliveryFailed)
-        //        .Finalize()
-        //);
+            When(ShipmentFailedEvent)
+                .Then(ctx =>
+                {
+                    ctx.Saga.DeliveryFailedAt = ctx.Message.FailedAt;
+                    ctx.Saga.FailureReason = ctx.Message.Reason;
+                    ctx.Saga.IsCanceled = true;
+                })
+                .TransitionTo(DeliveryFailed)
+                .Finalize()
+        );
 
         SetCompletedWhenFinalized();
     }

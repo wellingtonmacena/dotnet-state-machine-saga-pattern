@@ -105,12 +105,12 @@ namespace WebApi.Orders
 
             _ = app.UseAuthorization();
 
-            _ = app.MapGet("/", async (AppDbContext appDbContext) =>
+            _ = app.MapGet("/orders", async (AppDbContext appDbContext) =>
             {
                 return Results.Ok(await appDbContext.Orders.AsNoTracking().ToListAsync());
             });
 
-            _ = app.MapPost("/", async (AppDbContext appDbContext, IBus bus) =>
+            _ = app.MapPost("/orders", async (AppDbContext appDbContext, IBus bus) =>
             {
                 PaymentMethod[] paymentMethods = Enum.GetValues<PaymentMethod>();
                 int randomNumber = new Random().Next(0, paymentMethods.Length - 1);
