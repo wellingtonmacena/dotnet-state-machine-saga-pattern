@@ -27,15 +27,27 @@ public class AppDbContext(DbContextOptions<AppDbContext> dbContextOptions) : DbC
                   .HasConversion<string>()
                   .HasMaxLength(50);
 
-            entity.Property(p => p.Method)
+            entity.Property(p => p.PaymentMethod)
+             .HasColumnName("payment_method")
                   .HasConversion<string>()
                   .HasMaxLength(50);
 
             // PaymentDate deve ser obrigatório
-            entity.Property(p => p.PaymentDate).IsRequired();
+            entity.Property(p => p.PaymentDate)
+             .HasColumnName("payment_date")
+             .IsRequired();
 
             // TransactionCode opcional
-            entity.Property(p => p.TransactionCode).HasMaxLength(100);
+            entity.Property(p => p.TransactionCode)
+             .HasColumnName("transaction_code")
+             .HasMaxLength(100);
+
+            entity.Property(o => o.CreatedAt)
+                .HasColumnName("created_at")
+                .IsRequired();
+
+            entity.Property(o => o.UpdatedAt)
+              .HasColumnName("updated_at");
         });
     }
 

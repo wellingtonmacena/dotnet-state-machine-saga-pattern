@@ -23,6 +23,11 @@ namespace WebApi.Orders
                    .HasMaxLength(100)
                    .IsRequired();
 
+            builder.Property(o => o.Address)
+       .HasColumnName("address")
+       .HasMaxLength(255)
+       .IsRequired();
+
             builder.Property(o => o.Quantity)
                    .HasColumnName("quantity")
                    .HasColumnType("integer")

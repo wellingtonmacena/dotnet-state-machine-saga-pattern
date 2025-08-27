@@ -1,4 +1,5 @@
 
+using Bogus;
 using Library.MessagingContracts.Messages;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
@@ -14,34 +15,35 @@ namespace WebApi.Orders
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-        
+
 
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-            builder.Services.AddOpenApi();
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            _ = builder.Services.AddOpenApi();
+            _ = builder.Services.AddEndpointsApiExplorer();
+            _ = builder.Services.AddSwaggerGen();
 
-            builder.Services.AddDbContext<AppDbContext>(options => {
+            _ = builder.Services.AddDbContext<AppDbContext>(options =>
+            {
 
-                
-                options.UseNpgsql(
+
+                _ = options.UseNpgsql(
                         builder.Configuration.GetConnectionString("DbConnectionString"));
-                options.EnableSensitiveDataLogging();
+                _ = options.EnableSensitiveDataLogging();
             });
 
-            builder.Services.AddMassTransit(busConfigurator =>
+            _ = builder.Services.AddMassTransit(busConfigurator =>
             {
                 busConfigurator.SetKebabCaseEndpointNameFormatter();
 
                 busConfigurator.AddConsumers(typeof(Program).Assembly);
 
-                busConfigurator.AddSagaStateMachine<ProductOrderingSaga, ProductOrderingSagaData>()
+                _ = busConfigurator.AddSagaStateMachine<ProductOrderingSaga, ProductOrderingSagaData>()
                     .EntityFrameworkRepository(r =>
                     {
                         r.ExistingDbContext<AppDbContext>();
-                        
+
                         r.ConcurrencyMode = ConcurrencyMode.Pessimistic; // or use Optimistic, which requires a RowVersion column
-                        r.UsePostgres();
+                        _ = r.UsePostgres();
                     });
 
                 busConfigurator.UsingRabbitMq((context, cfg) =>
@@ -62,21 +64,21 @@ namespace WebApi.Orders
                 });
             });
 
-            builder.Services.AddControllers()
+            _ = builder.Services.AddControllers()
             .AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
                 options.JsonSerializerOptions.DictionaryKeyPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
             });
 
-            builder.Services.ConfigureHttpJsonOptions(options =>
+            _ = builder.Services.ConfigureHttpJsonOptions(options =>
             {
                 options.SerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
             });
 
-            builder.Services.AddHttpClient("InventoryClient", client =>
+            _ = builder.Services.AddHttpClient("InventoryClient", client =>
             {
-                client.BaseAddress = new Uri("https://localhost:7016/");              
+                client.BaseAddress = new Uri("https://localhost:7016/");
             });
 
             WebApplication app = builder.Build();
@@ -84,11 +86,11 @@ namespace WebApi.Orders
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                app.MapOpenApi();
+                _ = app.MapOpenApi();
                 using IServiceScope scope = app.Services.CreateScope();
                 await using AppDbContext dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
                 await dbContext.Database.MigrateAsync();
-                await dbContext.Database.EnsureCreatedAsync();
+                _ = await dbContext.Database.EnsureCreatedAsync();
             }
 
             _ = app.UseSwagger();
@@ -99,28 +101,28 @@ namespace WebApi.Orders
             });
 
 
-            app.UseHttpsRedirection();
+            _ = app.UseHttpsRedirection();
 
-            app.UseAuthorization();
+            _ = app.UseAuthorization();
 
-            app.MapGet("/", async (AppDbContext appDbContext) =>
+            _ = app.MapGet("/", async (AppDbContext appDbContext) =>
             {
                 return Results.Ok(await appDbContext.Orders.AsNoTracking().ToListAsync());
             });
 
-            app.MapPost("/", async (AppDbContext appDbContext, IBus bus) =>
+            _ = app.MapPost("/", async (AppDbContext appDbContext, IBus bus) =>
             {
-                var paymentMethods = Enum.GetValues<PaymentMethod>();
-                var randomNumber = new Random().Next(0, paymentMethods.Length - 1);
+                PaymentMethod[] paymentMethods = Enum.GetValues<PaymentMethod>();
+                int randomNumber = new Random().Next(0, paymentMethods.Length - 1);
+                var faker = new Faker("pt_BR");
 
-              
-                var order = new CreateOrder(Guid.Parse("3a1f2c44-5f6d-4e5e-9b3f-21a7e8d1c001"), 2, paymentMethods[randomNumber]);
+                CreateOrderCommand order = new(Guid.Parse("3a1f2c44-5f6d-4e5e-9b3f-21a7e8d1c001"), 2, paymentMethods[randomNumber], faker.Address.FullAddress());
                 await bus.Publish(order);
 
                 return Results.Accepted();
             });
 
-            app.MapControllers();
+            _ = app.MapControllers();
 
             await app.RunAsync(); // Changed to RunAsync to support async Main
         }

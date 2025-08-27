@@ -17,6 +17,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> dbContextOptions) : DbC
         {
             entity.Property(p => p.Name).IsRequired().HasMaxLength(200);
             entity.Property(p => p.Price).HasPrecision(18, 2);
+            entity.Property(p => p.Manufacturer).IsRequired().HasMaxLength(200);
+            entity.Property(p => p.Description).IsRequired().HasMaxLength(200);
+            entity.Property(p => p.UpdatedAt).IsRequired();
+            entity.Property(p => p.CreatedAt).IsRequired();
         });
 
         // StockItem

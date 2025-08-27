@@ -10,7 +10,7 @@ namespace WebApi.Payments.Models
 
         public PaymentStatus Status { get; set; } = PaymentStatus.Pending;
 
-        public PaymentMethod Method { get; set; } = PaymentMethod.Other;
+        public PaymentMethod PaymentMethod { get; set; } = PaymentMethod.Other;
 
         public DateTime PaymentDate { get; set; } = DateTime.UtcNow;
 

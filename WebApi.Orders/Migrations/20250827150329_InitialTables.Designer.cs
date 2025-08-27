@@ -12,8 +12,8 @@ using WebApi.Orders;
 namespace WebApi.Orders.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250826224253_AddInitialTables")]
-    partial class AddInitialTables
+    [Migration("20250827150329_InitialTables")]
+    partial class InitialTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -31,6 +31,12 @@ namespace WebApi.Orders.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("address");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
@@ -75,6 +81,10 @@ namespace WebApi.Orders.Migrations
                     b.Property<Guid>("CorrelationId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<decimal>("AmountPaid")
                         .HasColumnType("numeric");

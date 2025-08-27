@@ -12,8 +12,8 @@ using WebApi.Payments;
 namespace WebApi.Payments.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250826215914_AddInitialTables")]
-    partial class AddInitialTables
+    [Migration("20250827150450_InitialTables")]
+    partial class InitialTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -36,12 +36,8 @@ namespace WebApi.Payments.Migrations
                         .HasColumnType("numeric(18,2)");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Method")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
 
                     b.Property<Guid>("OrderId")
                         .HasMaxLength(100)
@@ -49,7 +45,14 @@ namespace WebApi.Payments.Migrations
                         .HasColumnName("order_id");
 
                     b.Property<DateTime>("PaymentDate")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("payment_date");
+
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("payment_method");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -58,10 +61,12 @@ namespace WebApi.Payments.Migrations
 
                     b.Property<string>("TransactionCode")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("transaction_code");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
 
                     b.HasKey("Id");
 

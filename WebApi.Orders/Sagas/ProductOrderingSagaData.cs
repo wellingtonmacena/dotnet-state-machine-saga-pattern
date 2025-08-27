@@ -27,9 +27,10 @@ public class ProductOrderingSagaData : SagaStateMachineInstance
     public DateTime? ShippedAt { get; set; }
     public DateTime? DeliveredAt { get; set; }
     public DateTime? DeliveryFailedAt { get; set; }
+    public string Address { get;  set; }
 
     // Status
-    public string? FailureReason { get; set; }
+    public string? FailureReason { get; set; } = string.Empty;
     public bool IsCanceled { get; set; }
     public bool IsRefunded { get; set; }
     public bool IsCompleted { get; set; }

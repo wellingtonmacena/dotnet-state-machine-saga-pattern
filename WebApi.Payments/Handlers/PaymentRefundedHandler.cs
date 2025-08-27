@@ -3,9 +3,9 @@ using MassTransit;
 
 namespace WebApi.Payments.Handlers
 {
-    public class PaymentRefundedHandler(AppDbContext appDbContext) : IConsumer<PaymentRefunded>
+    public class PaymentRefundedHandler(AppDbContext appDbContext) : IConsumer<PaymentRefundedEvent>
     {
-        public async Task Consume(ConsumeContext<PaymentRefunded> context)
+        public async Task Consume(ConsumeContext<PaymentRefundedEvent> context)
         {
             var payment = appDbContext.Payments.FirstOrDefault(p => p.OrderId  == context.Message.OrderId);
 

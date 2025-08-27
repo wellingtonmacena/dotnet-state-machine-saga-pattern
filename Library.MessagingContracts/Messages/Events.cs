@@ -2,19 +2,20 @@
 {
 
     // Pedido
-    public record OrderCreated
+    public record OrderCreatedEvent
     {
         public Guid OrderId { get; init; }
         public Guid ProductId { get; init; }
         public int Quantity { get; init; }
         public decimal TotalPrice { get; init; }
         public PaymentMethod PaymentMethod { get; init; }
+        public string Address { get; init; } = string.Empty;
         public DateTime CreatedAt { get; init; }
     }
 
     // Estoque
 
-    public record CheckProductsAvailableEventReceived
+    public record InventoryCheckPerformedEvent
     {
         public Guid OrderId { get; init; }
         public Guid ProductId { get; init; }
@@ -22,7 +23,7 @@
         public DateTime CheckedAt { get; init; }
     }
 
-    public record ProductsAvailableChecked
+    public record InventoryReservedEvent
     {
         public Guid OrderId { get; init; }
         public Guid ProductId { get; init; }
@@ -31,13 +32,13 @@
         public DateTime CheckedAt { get; init; }
     }
 
-    public record ProductsUnavailableChecked
+    public record InventoryOutOfStockEvent
     {
         public Guid OrderId { get; init; }
         public DateTime CheckedAt { get; init; }
     }
 
-    public record ProductsReturned
+    public record InventoryReleasedEvent
     {
         public Guid OrderId { get; init; }
         public Guid ProductId { get; init; }
@@ -47,14 +48,14 @@
 
     // Pagamento
 
-    public record ProcessPaymentEventReceived
+    public record PaymentInitiatedEvent
     {
         public Guid OrderId { get; init; }
         public decimal Amount { get; init; }
         public DateTime PaidAt { get; init; }
         public  PaymentMethod PaymentMethod { get; init; }
     }
-    public record PaymentSuccessfulProcessed
+    public record PaymentSucceededEvent
     {
         public Guid OrderId { get; init; }
         public decimal Amount { get; init; }
@@ -62,7 +63,7 @@
         public PaymentMethod PaymentMethod { get; init; }
     }
 
-    public record PaymentFailedProcessed
+    public record PaymentFailedEvent
     {
         public Guid OrderId { get; init; }
         public string Reason { get; init; } = string.Empty;
@@ -70,7 +71,7 @@
         public PaymentMethod PaymentMethod { get; init; }
     }
 
-    public record PaymentRefunded
+    public record PaymentRefundedEvent
     {
         public Guid OrderId { get; init; }
         public string Reason { get; init; } = string.Empty;
@@ -79,21 +80,32 @@
     }
 
     // Entrega
-    public record OrderShippedEvent
+
+    public record ShipmentCreatedEvent
     {
         public Guid OrderId { get; init; }
+        public string Address { get; init; } = string.Empty;
         public DateTime ShippedAt { get; init; }
     }
 
-    public record OrderDeliveredEvent
+    public record ShipmentDispatchedEvent
     {
         public Guid OrderId { get; init; }
+        public string Address { get; init; } = string.Empty;
+        public DateTime ShippedAt { get; init; }
+    }
+
+    public record ShipmentDeliveredEvent
+    {
+        public Guid OrderId { get; init; }
+        public string Address { get; init; } = string.Empty;
         public DateTime DeliveredAt { get; init; }
     }
 
-    public record DeliveryFailedEvent
+    public record ShipmentFailedEvent
     {
         public Guid OrderId { get; init; }
+        public string Address { get; init; } = string.Empty;
         public string Reason { get; init; } = string.Empty;
         public DateTime FailedAt { get; init; }
     }

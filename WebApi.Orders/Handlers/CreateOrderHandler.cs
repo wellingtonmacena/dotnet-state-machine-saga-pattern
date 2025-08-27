@@ -5,19 +5,19 @@ using WebApi.Orders.Messages;
 
 namespace WebApi.Orders.Handlers
 {
-    public class CreateOrderHandler(AppDbContext appDbContext, IHttpClientFactory _httpClientFactory) : IConsumer<CreateOrder>
+    public class CreateOrderHandler(AppDbContext appDbContext, IHttpClientFactory _httpClientFactory) : IConsumer<CreateOrderCommand>
     {
-        public async Task Consume(ConsumeContext<CreateOrder> context)
+        public async Task Consume(ConsumeContext<CreateOrderCommand> context)
         {
             HttpClient client = _httpClientFactory.CreateClient("InventoryClient");
             HttpResponseMessage response = await client.GetAsync($"/products/{context.Message.ProductId}");
 
-            if(response.IsSuccessStatusCode == false)
+            if (response.IsSuccessStatusCode == false)
             {
                 throw new Exception("Product not found");
             }
 
-            var product = await response.Content.ReadFromJsonAsync<ProductDto>();
+            ProductDto? product = await response.Content.ReadFromJsonAsync<ProductDto>();
 
             Order order = new()
             {
@@ -26,12 +26,13 @@ namespace WebApi.Orders.Handlers
                 Status = EStatus.Created,
                 PaymentMethod = context.Message.PaymentMethod,
                 TotalPrice = product.Price * context.Message.Quantity,
+                Address = context.Message.Address,
             };
 
             Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<Order> createdOrder = await appDbContext.Orders.AddAsync(order);
             await appDbContext.SaveChangesAsync();
 
-            await context.Publish(new OrderCreated
+            await context.Publish(new OrderCreatedEvent
             {
                 OrderId = createdOrder.Entity.Id,
                 ProductId = createdOrder.Entity.ProductId,
@@ -39,6 +40,7 @@ namespace WebApi.Orders.Handlers
                 Quantity = createdOrder.Entity.Quantity,
                 CreatedAt = createdOrder.Entity.CreatedAt,
                 PaymentMethod = createdOrder.Entity.PaymentMethod,
+                Address = createdOrder.Entity.Address
             });
         }
     }

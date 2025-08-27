@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace WebApi.Inventory.Handlers
 {
-    public class CheckProductsAvailableEventReceivedHandler(AppDbContext appDbContext) : IConsumer<CheckProductsAvailableEventReceived>
+    public class CheckProductsAvailableEventReceivedHandler(AppDbContext appDbContext) : IConsumer<InventoryCheckPerformedEvent>
     {
-        public async Task Consume(ConsumeContext<CheckProductsAvailableEventReceived> context)
+        public async Task Consume(ConsumeContext<InventoryCheckPerformedEvent> context)
         {
             bool isAvailable = appDbContext.StockItems.Any(si => si.ProductId == context.Message.ProductId && context.Message.Quantity <= si.Quantity);
 
@@ -20,7 +20,7 @@ namespace WebApi.Inventory.Handlers
                 appDbContext.StockItems.Update(stockItem);
                 await appDbContext.SaveChangesAsync();
 
-                await context.Publish(new ProductsAvailableChecked
+                await context.Publish(new InventoryReservedEvent
                 {
                     OrderId = context.Message.OrderId,
                     CheckedAt = DateTime.UtcNow,
@@ -33,7 +33,7 @@ namespace WebApi.Inventory.Handlers
             else
             {
 
-                await context.Publish(new ProductsUnavailableChecked
+                await context.Publish(new InventoryOutOfStockEvent
                 {
                     OrderId = context.Message.OrderId,
                     CheckedAt = DateTime.UtcNow,

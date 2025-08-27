@@ -4,9 +4,9 @@ using WebApi.Orders.Messages;
 
 namespace WebApi.Orders.Handlers
 {
-    public class RefundPaymentHandler(AppDbContext appDbContext) : IConsumer<RefundPayment>
+    public class RefundPaymentHandler(AppDbContext appDbContext) : IConsumer<RefundPaymentCommand>
     {
-        public async Task Consume(ConsumeContext<RefundPayment> context)
+        public async Task Consume(ConsumeContext<RefundPaymentCommand> context)
         {
             Order? order = appDbContext.Orders.FirstOrDefault(o => o.Id == context.Message.OrderId);
 
@@ -14,7 +14,7 @@ namespace WebApi.Orders.Handlers
             appDbContext.Update(order);
             await appDbContext.SaveChangesAsync();
 
-            PaymentRefunded paymentRefunded = new()
+            PaymentRefundedEvent paymentRefunded = new()
             {
                 OrderId = context.Message.OrderId,
                 FailedAt = DateTime.UtcNow,

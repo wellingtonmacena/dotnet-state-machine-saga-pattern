@@ -3,21 +3,21 @@
 namespace WebApi.Orders.Messages
 {
     // Pedido
-    public record CreateOrder(Guid ProductId, int Quantity, PaymentMethod PaymentMethod);
+    public record CreateOrderCommand(Guid ProductId, int Quantity, PaymentMethod PaymentMethod, string Address);
 
     // Estoque
-    public record ReserveStock(Guid OrderId, Guid ProductId, int Quantity);
-    public record ReturnStock(Guid OrderId, Guid ProductId, int Quantity);
+    public record ReserveStockCommand(Guid OrderId, Guid ProductId, int Quantity);
+    public record ReturnStockCommand(Guid OrderId, Guid ProductId, int Quantity);
 
-    public record CancelStockReservation(Guid OrderId, string Reason = "");
+    public record CancelStockReservationCommand(Guid OrderId, string Reason = "");
 
     // Pagamento
-    public record ProcessPayment(Guid OrderId, decimal Amount, PaymentMethod PaymentMethod);
+    public record ProcessPaymentCommand(Guid OrderId, decimal Amount, PaymentMethod PaymentMethod);
 
-    public record RefundPayment(Guid OrderId, decimal Amount, string Reason = "");
+    public record RefundPaymentCommand(Guid OrderId, decimal Amount, string Reason = "");
 
     // Entrega
-    public record ShipOrder(Guid OrderId, string Address = "");
+    public record ShipOrderCommand(Guid OrderId, string Address = "");
 
-    public record CancelDelivery(Guid OrderId, string Reason = "");
+    public record CancelDeliveryCommand(Guid OrderId, string Reason = "");
 }

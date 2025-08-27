@@ -3,9 +3,9 @@ using MassTransit;
 
 namespace WebApi.Inventory.Handlers
 {
-    public class ProductsReturnedHandler(AppDbContext appDbContext) : IConsumer<ProductsReturned>
+    public class ProductsReturnedHandler(AppDbContext appDbContext) : IConsumer<InventoryReleasedEvent>
     {
-        public async Task Consume(ConsumeContext<ProductsReturned> context)
+        public async Task Consume(ConsumeContext<InventoryReleasedEvent> context)
         {
             Models.StockItem? stockItem = appDbContext.StockItems.FirstOrDefault(p => p.ProductId == context.Message.ProductId);
 

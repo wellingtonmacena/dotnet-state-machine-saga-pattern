@@ -4,11 +4,11 @@ using WebApi.Orders.Messages;
 
 namespace WebApi.Orders.Handlers
 {
-    public class ProcessPaymentHandler(AppDbContext appDbContext) : IConsumer<ProcessPayment>
+    public class ProcessPaymentHandler(AppDbContext appDbContext) : IConsumer<ProcessPaymentCommand>
     {
-        public async Task Consume(ConsumeContext<ProcessPayment> context)
+        public async Task Consume(ConsumeContext<ProcessPaymentCommand> context)
         {
-            ProcessPaymentEventReceived processPaymentEventReceived = new()
+            PaymentInitiatedEvent processPaymentEventReceived = new()
             {
                 OrderId = context.Message.OrderId,
                 PaidAt = DateTime.UtcNow,

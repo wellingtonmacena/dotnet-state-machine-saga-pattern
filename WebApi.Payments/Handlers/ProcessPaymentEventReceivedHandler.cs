@@ -4,26 +4,30 @@ using WebApi.Payments.Models;
 
 namespace WebApi.Payments.Handlers
 {
-    public class ProcessPaymentEventReceivedHandler(AppDbContext appDbContext) : IConsumer<ProcessPaymentEventReceived>
+    public class ProcessPaymentEventReceivedHandler(AppDbContext appDbContext) : IConsumer<PaymentInitiatedEvent>
     {
-        public async Task Consume(ConsumeContext<ProcessPaymentEventReceived> context)
+        public async Task Consume(ConsumeContext<PaymentInitiatedEvent> context)
         {
-            var isSuccessful = new Random().NextDouble() >= 0.5;
+            double milliseconds = new Random().NextDouble();
+            bool isSuccessful = milliseconds <= 0.5;
 
             Payment payment = new()
             {
                 OrderId = context.Message.OrderId,
                 Amount = context.Message.Amount,
-                Method = context.Message.PaymentMethod,
+                PaymentMethod = context.Message.PaymentMethod,
                 PaymentDate = context.Message.PaidAt,
                 Status = isSuccessful ? PaymentStatus.Completed : PaymentStatus.Failed,
             };
             appDbContext.Payments.Add(payment);
             await appDbContext.SaveChangesAsync();
 
+            var seconds = milliseconds * 20;
+            Thread.Sleep(TimeSpan.FromSeconds(seconds));
+
             if (isSuccessful)
             {
-                PaymentSuccessfulProcessed paymentSuccessfulProcessed = new()
+                PaymentSucceededEvent paymentSuccessfulProcessed = new()
                 {
                     OrderId = context.Message.OrderId,
                     PaidAt = context.Message.PaidAt,
@@ -34,7 +38,7 @@ namespace WebApi.Payments.Handlers
             }
             else
             {
-                PaymentFailedProcessed paymentFailedProcessed = new()
+                PaymentFailedEvent paymentFailedProcessed = new()
                 {
                     OrderId = context.Message.OrderId,
                     Reason = "Payment processing failed due to insufficient funds.",

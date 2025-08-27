@@ -9,5 +9,6 @@ namespace WebApi.Orders
         public decimal TotalPrice { get; set; }
         public PaymentMethod PaymentMethod { get; set; }
         public EStatus Status { get; set; }
+        public string Address { get; init; } = string.Empty;
     }
 }

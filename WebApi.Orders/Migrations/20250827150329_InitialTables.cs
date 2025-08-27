@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace WebApi.Orders.Migrations
 {
     /// <inheritdoc />
-    public partial class AddInitialTables : Migration
+    public partial class InitialTables : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -21,6 +21,7 @@ namespace WebApi.Orders.Migrations
                     total_price = table.Column<decimal>(type: "decimal", nullable: false),
                     payment_method = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     status = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    address = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
@@ -47,6 +48,7 @@ namespace WebApi.Orders.Migrations
                     ShippedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     DeliveredAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     DeliveryFailedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    Address = table.Column<string>(type: "text", nullable: false),
                     FailureReason = table.Column<string>(type: "text", nullable: true),
                     IsCanceled = table.Column<bool>(type: "boolean", nullable: false),
                     IsRefunded = table.Column<bool>(type: "boolean", nullable: false),
