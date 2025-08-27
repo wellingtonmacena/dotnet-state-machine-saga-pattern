@@ -3,7 +3,7 @@ using MassTransit;
 
 namespace WebApi.Inventory.Handlers
 {
-    public class ProductsReturnedHandler(AppDbContext appDbContext) : IConsumer<InventoryReleasedEvent>
+    public class InventoryReleasedEventHandler(AppDbContext appDbContext) : IConsumer<InventoryReleasedEvent>
     {
         public async Task Consume(ConsumeContext<InventoryReleasedEvent> context)
         {

@@ -3,7 +3,7 @@ using WebApi.Orders.Messages;
 
 namespace WebApi.Orders.Handlers
 {
-    public class CancelStockReservationHandler(AppDbContext appDbContext) : IConsumer<CancelStockReservationCommand>
+    public class CancelStockReservationCommandHandler(AppDbContext appDbContext) : IConsumer<CancelStockReservationCommand>
     {
         public async Task Consume(ConsumeContext<CancelStockReservationCommand> context)
         {

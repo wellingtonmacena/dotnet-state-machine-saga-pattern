@@ -4,7 +4,7 @@ using WebApi.Orders.Messages;
 
 namespace WebApi.Orders.Handlers
 {
-    public class ShipOrderHandler(AppDbContext appDbContext) : IConsumer<ShipOrderCommand>
+    public class ShipOrderCommandHandler(AppDbContext appDbContext) : IConsumer<ShipOrderCommand>
     {
         public async Task Consume(ConsumeContext<ShipOrderCommand> context)
         {

@@ -4,7 +4,7 @@ using WebApi.Payments.Models;
 
 namespace WebApi.Payments.Handlers
 {
-    public class ProcessPaymentEventReceivedHandler(AppDbContext appDbContext) : IConsumer<PaymentInitiatedEvent>
+    public class PaymentInitiatedEventHandler(AppDbContext appDbContext) : IConsumer<PaymentInitiatedEvent>
     {
         public async Task Consume(ConsumeContext<PaymentInitiatedEvent> context)
         {

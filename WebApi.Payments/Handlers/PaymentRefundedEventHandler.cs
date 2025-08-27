@@ -3,7 +3,7 @@ using MassTransit;
 
 namespace WebApi.Payments.Handlers
 {
-    public class PaymentRefundedHandler(AppDbContext appDbContext) : IConsumer<PaymentRefundedEvent>
+    public class PaymentRefundedEventHandler(AppDbContext appDbContext) : IConsumer<PaymentRefundedEvent>
     {
         public async Task Consume(ConsumeContext<PaymentRefundedEvent> context)
         {

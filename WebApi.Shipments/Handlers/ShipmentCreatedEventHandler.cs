@@ -3,7 +3,7 @@ using MassTransit;
 
 namespace WebApi.Shipments.Handlers
 {
-    public class ShipmentOrderCreatedHandler(AppDbContext appDbContext) : IConsumer<ShipmentCreatedEvent>
+    public class ShipmentCreatedEventHandler(AppDbContext appDbContext) : IConsumer<ShipmentCreatedEvent>
     {
         public async Task Consume(ConsumeContext<ShipmentCreatedEvent> context)
         {

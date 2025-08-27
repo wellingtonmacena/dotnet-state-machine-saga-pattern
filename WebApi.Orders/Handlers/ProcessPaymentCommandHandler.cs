@@ -4,7 +4,7 @@ using WebApi.Orders.Messages;
 
 namespace WebApi.Orders.Handlers
 {
-    public class ProcessPaymentHandler(AppDbContext appDbContext) : IConsumer<ProcessPaymentCommand>
+    public class ProcessPaymentCommandHandler(AppDbContext appDbContext) : IConsumer<ProcessPaymentCommand>
     {
         public async Task Consume(ConsumeContext<ProcessPaymentCommand> context)
         {

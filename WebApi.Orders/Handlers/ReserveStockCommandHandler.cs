@@ -4,7 +4,7 @@ using WebApi.Orders.Messages;
 
 namespace WebApi.Orders.Handlers
 {
-    public class ReserveStockHandler(IPublishEndpoint publisher, AppDbContext appDbContext) : IConsumer<ReserveStockCommand>
+    public class ReserveStockCommandHandler(IPublishEndpoint publisher, AppDbContext appDbContext) : IConsumer<ReserveStockCommand>
     {
         public async Task Consume(ConsumeContext<ReserveStockCommand> context)
         {

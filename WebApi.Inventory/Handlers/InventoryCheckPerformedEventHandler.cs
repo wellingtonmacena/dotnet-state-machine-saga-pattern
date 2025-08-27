@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace WebApi.Inventory.Handlers
 {
-    public class CheckProductsAvailableEventReceivedHandler(AppDbContext appDbContext) : IConsumer<InventoryCheckPerformedEvent>
+    public class InventoryCheckPerformedEventHandler(AppDbContext appDbContext) : IConsumer<InventoryCheckPerformedEvent>
     {
         public async Task Consume(ConsumeContext<InventoryCheckPerformedEvent> context)
         {
