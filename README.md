@@ -1,115 +1,181 @@
+﻿
+# ⚡ Saga Pattern with State Machine in .NET
 
-# Saga Pattern with State Machine in .NET
-
-This project demonstrates the implementation of the **Saga pattern**, using a **State Machine** to orchestrate distributed transactions in a microservices environment. Communication between services is handled asynchronously using a **message broker** (RabbitMQ) and the **MassTransit** library.
-
----
-
-## The Saga Pattern
-
-The Saga pattern is an architectural approach to managing **long-lived, business-critical transactions** in distributed systems where a single, atomic ACID transaction is not feasible. A saga is a sequence of **local, decoupled transactions**, where each service performs its operation and then publishes a message or event to trigger the next step. If a step fails, the saga executes **compensating transactions** to undo the changes made by previous successful steps, ensuring data consistency across services.
-
-### Implementation Approaches
-
-1. **Choreography**
-   - Decentralized approach
-   - Each service publishes events consumed by others, triggering local transactions
-   - No central coordinator
-   - Simpler for smaller workflows, harder to manage at scale
-
-2. **Orchestration**
-   - Centralized approach
-   - A **Saga Orchestrator** manages the workflow
-   - Orchestrator sends commands and reacts to events to determine next steps
-   - Easier to monitor, maintain, and handle failures  
-   - This project uses **orchestration with a state machine**
+This project demonstrates the implementation of the **Saga Pattern**, using a **State Machine** to orchestrate distributed transactions in a microservices environment.  
+Communication between services is handled asynchronously using a **message broker** (**RabbitMQ**) and the **MassTransit** library.
 
 ---
 
-## Application and Project Descriptions
+## 🧩 What is the Saga Pattern?
 
-The application simulates a typical **e-commerce order process**, a classic example of a business transaction that spans multiple domains.
+The Saga Pattern is an architectural approach for managing **long-lived, business-critical transactions** in distributed systems where a single, atomic ACID transaction is not feasible.  
 
-### Microservices
+A saga is a sequence of **local, decoupled transactions**:
+- Each service executes its own transaction.
+- Services publish **events** or **commands** to trigger the next step.
+- If a step fails, the saga triggers **compensating transactions** to undo previous operations, ensuring data consistency.
 
-- **WebApi.Orders**
-  - Acts as the **saga orchestrator**
-  - Manages the state of `ProductOrderingSaga`
-  - Entry point for creating an order
-  - Initiates saga and reacts to events from other services
+### 🔀 Implementation Styles
 
-- **WebApi.Inventory**
-  - Manages **product stock**
-  - Listens for `ReserveStockCommand`
-  - Publishes `InventoryReservedEvent` or `InventoryOutOfStockEvent`
+1. **Choreography**  
+   - Decentralized: services react to each other’s events.  
+   - Works well for small workflows, but grows complex at scale.  
 
-- **WebApi.Payments**
-  - Handles **payment processing**
-  - Receives `ProcessPaymentCommand`
-  - Publishes `PaymentSucceededEvent` or `PaymentFailedEvent`
-
-- **WebApi.Shipments**
-  - Manages **shipment process**
-  - Receives `ShipOrderCommand`
-  - Publishes `ShipmentDispatchedEvent` or `ShipmentDeliveredEvent`
-
-- **Library.MessagingContracts**
-  - Shared library defining message contracts (commands and events)
-  - Ensures consistent inter-service communication
-
-- **docker-compose.yaml**
-  - Defines infrastructure containers
-  - Includes PostgreSQL and RabbitMQ
+2. **Orchestration**  
+   - Centralized: a **Saga Orchestrator** manages the workflow.  
+   - Easier to maintain, monitor, and handle failures.  
+   - 👉 **This project uses orchestration with a state machine.**
 
 ---
 
-## Flowchart of Events and Their Flows
+## 🛒 Application Overview
 
-The orchestration flow for a **successful order** and **compensation** in case of payment failure:
+The application simulates a typical **e-commerce order process**, a classic case of a business transaction spanning multiple domains.
+
+### 🔧 Microservices
+
+- **WebApi.Orders**  
+  - Saga orchestrator  
+  - Manages the state of `ProductOrderingSaga`  
+  - Entry point for order creation  
+
+- **WebApi.Inventory**  
+  - Manages product stock  
+  - Handles `ReserveStockCommand` → publishes `InventoryReservedEvent` or `InventoryOutOfStockEvent`  
+
+- **WebApi.Payments**  
+  - Processes payments  
+  - Handles `ProcessPaymentCommand` → publishes `PaymentSucceededEvent` or `PaymentFailedEvent`  
+
+- **WebApi.Shipments**  
+  - Manages shipments  
+  - Handles `ShipOrderCommand` → publishes `ShipmentDispatchedEvent` or `ShipmentDeliveredEvent`  
+
+- **Library.MessagingContracts**  
+  - Shared library with message contracts (commands & events)  
+  - Ensures consistency in communication  
+
+- **docker-compose.yaml**  
+  - Infrastructure setup (PostgreSQL, RabbitMQ)  
+
+---
+
+## 🔄 Event Flow
+
+Below is the orchestration flow for both a **successful order** and the **compensation scenario** when payment fails:
 
 ```mermaid
 graph TD
     A[Order API: POST /orders] -->|Publishes CreateOrderCommand| B{MassTransit Bus}
     B -->|Consumes CreateOrderCommand| C[Orders API: CreateOrderCommandHandler]
     C -->|Persists Order, Publishes OrderCreatedEvent| D[Saga: ProductOrderingSaga]
-    D -->|State: OrderCreated, Publishes ReserveStockCommand| E[Inventory API: InventoryCheckPerformedEventHandler]
+    D -->|Publishes ReserveStockCommand| E[Inventory API]
     
-    E -->|Inventory Available, Publishes InventoryReservedEvent| F[Saga: ProductOrderingSaga]
-    F -->|State: ProductInStock, Publishes ProcessPaymentCommand| G[Payments API: PaymentInitiatedEventHandler]
+    E -->|Inventory Available| F[Saga: ProductOrderingSaga]
+    F -->|Publishes ProcessPaymentCommand| G[Payments API]
     
-    G -->|Payment Succeeded, Publishes PaymentSucceededEvent| H[Saga: ProductOrderingSaga]
-    H -->|State: PaymentSuccessful, Publishes ShipOrderCommand| I[Shipments API: ShipmentCreatedEventHandler]
+    G -->|Payment Succeeded| H[Saga: ProductOrderingSaga]
+    H -->|Publishes ShipOrderCommand| I[Shipments API]
     
     I -->|Publishes ShipmentDispatchedEvent| J[Saga: ProductOrderingSaga]
-    J -->|State: OrderShipped, Publishes DeliverPackageCommand| K[Shipments API: DeliverPackageCommandHandler]
-    
-    K -->|Publishes ShipmentDeliveredEvent| L[Saga: ProductOrderingSaga]
-    L -->|State: OrderDelivered| Z[Saga Completed Successfully]
+    J -->|Publishes DeliverPackageCommand| K[Shipments API]
+    K -->|Publishes ShipmentDeliveredEvent| L[Saga Completed ✅]
 
-    E -->|Inventory Out of Stock, Publishes InventoryOutOfStockEvent| M[Saga: ProductOrderingSaga]
-    M -->|State: ProductOutOfStock, Updates Order Status| N[Saga Ends with Stock Failure]
-
-    G -->|Payment Failed, Publishes PaymentFailedEvent| O[Saga: ProductOrderingSaga]
-    O -->|State: PaymentFailed, Publishes ReturnStockCommand| P[Inventory API: InventoryReleasedEventHandler]
-    P -->|Releases Stock, Publishes InventoryReleasedEvent| Q[Saga Ends with Compensation]
+    %% Failures
+    E -->|Out of Stock| M[Saga: Ends ❌ Stock Failure]
+    G -->|Payment Failed| N[Saga: Compensation Trigger]
+    N -->|Publishes ReturnStockCommand| O[Inventory API: Releases Stock]
+    O -->|Publishes InventoryReleasedEvent| P[Saga Ends with Compensation ♻️]
 ````
 
 ---
 
-## References
+## 🚀 Getting Started
 
-* **MassTransit Documentation**
-  [https://masstransit.io/documentation/concepts](https://masstransit.io/documentation/concepts)
+### 1️⃣ Clone the Repository
 
-* **Saga Pattern on Microservices.io**
-  [https://microservices.io/patterns/data/saga.html](https://microservices.io/patterns/data/saga.html)
+```bash
+git clone https://github.com/your-repo/dotnet-state-machine-saga-pattern.git
+cd dotnet-state-machine-saga-pattern
+```
 
-* **Microsoft Azure Architecture Center**
-  [https://learn.microsoft.com/en-us/azure/architecture/patterns/saga](https://learn.microsoft.com/en-us/azure/architecture/patterns/saga)
+### 2️⃣ Start Dependencies with Docker
+
+The solution requires **RabbitMQ** (and optionally PostgreSQL).
+Run the provided Docker setup:
+
+```bash
+docker-compose up -d
+```
+
+🔗 RabbitMQ Management Console: [http://localhost:15672](http://localhost:15672)
+(default user: `guest`, password: `guest`)
 
 ---
 
-## Contact
+## 🛠️ Build the Solution
+
+From the root folder:
+
+```bash
+dotnet build SagaPattern.sln
+```
+
+---
+
+## ▶️ Running the Microservices
+
+Each microservice is an independent WebAPI project. Run them individually:
+
+### Orders API
+
+```bash
+cd WebApi.Orders
+dotnet run
+```
+
+👉 Swagger: [https://localhost:7005/swagger](https://localhost:7005/swagger)
+
+---
+
+### Inventory API
+
+```bash
+cd WebApi.Inventory
+dotnet run
+```
+
+---
+
+### Payments API
+
+```bash
+cd WebApi.Payments
+dotnet run
+```
+
+---
+
+### Shipments API
+
+```bash
+cd WebApi.Shipments
+dotnet run
+```
+
+---
+
+## 📚 References
+
+* [MassTransit Documentation](https://masstransit.io/documentation/concepts)
+* [Saga Pattern – Microservices.io](https://microservices.io/patterns/data/saga.html)
+* [Microsoft – Saga Pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/saga)
+
+---
+
+## 📬 Contact
 
 * **Email:** [wellington.macena.23@gmail.com](mailto:wellington.macena.23@gmail.com)
 * **LinkedIn:** [Wellington Macena](https://www.linkedin.com/in/wellingtonmacena/)
+
+---
