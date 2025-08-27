@@ -3,13 +3,13 @@ using WebApi.Orders.Messages;
 
 namespace WebApi.Orders.Handlers
 {
-    public class CancelStockReservationCommandHandler(AppDbContext appDbContext) : IConsumer<CancelStockReservationCommand>
+    public class UpdateOrderCommandHandler(AppDbContext appDbContext) : IConsumer<UpdateOrderCommand>
     {
-        public async Task Consume(ConsumeContext<CancelStockReservationCommand> context)
+        public async Task Consume(ConsumeContext<UpdateOrderCommand> context)
         {
             Order? order = appDbContext.Orders.FirstOrDefault(o => o.Id == context.Message.OrderId);
 
-            order.Status = EStatus.StockUnavailable;
+            order.Status = context.Message.Status;
             appDbContext.Update(order);
             await appDbContext.SaveChangesAsync();
         }

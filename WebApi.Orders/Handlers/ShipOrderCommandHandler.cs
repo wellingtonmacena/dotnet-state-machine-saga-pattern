@@ -15,13 +15,6 @@ namespace WebApi.Orders.Handlers
                 ShippedAt = DateTime.UtcNow,
             };
 
-
-            Order? order = appDbContext.Orders.FirstOrDefault(o => o.Id == context.Message.OrderId);
-
-            order.Status = EStatus.Shipped;
-            appDbContext.Update(order);
-            await appDbContext.SaveChangesAsync();
-
             await context.Publish(shipmentOrderCreatedEvent);
         }
     }

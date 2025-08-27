@@ -11,7 +11,7 @@ namespace WebApi.Shipments.Handlers
            {
                OrderId = context.Message.OrderId,
                ShippedAt = DateTime.UtcNow,
-               Status = Models.ShipmentStatus.Pending,
+               Status = Models.ShipmentStatus.Shipped,
                Carrier = "Default Carrier",
                DestinationAddress = context.Message.Address,
                TrackingNumber = Guid.NewGuid().ToString().Substring(0, 8).ToUpper(),           

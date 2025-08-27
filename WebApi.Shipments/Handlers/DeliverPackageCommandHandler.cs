@@ -16,7 +16,8 @@ namespace WebApi.Shipments.Handlers
                 throw new Exception($"Shipment with OrderId {context.Message.OrderId} not found.");
             }
 
-            shipment.Status = Models.ShipmentStatus.Shipped;
+            shipment.Status = Models.ShipmentStatus.Delivered;
+            shipment.DeliveredAt = DateTime.UtcNow;
             await appDbContext.SaveChangesAsync();
 
             await context.Publish(new ShipmentDeliveredEvent
@@ -24,8 +25,6 @@ namespace WebApi.Shipments.Handlers
                 OrderId = context.Message.OrderId,
                 DeliveredAt = DateTime.UtcNow,
             });
-
-
         }
     }
 }

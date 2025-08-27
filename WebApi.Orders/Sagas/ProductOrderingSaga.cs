@@ -91,7 +91,7 @@ public class ProductOrderingSaga : MassTransitStateMachine<ProductOrderingSagaDa
                 ctx.Saga.IsCanceled = true;
             })
             .TransitionTo(ProductOutOfStock)
-            .Publish(ctx => new CancelStockReservationCommand(ctx.Saga.OrderId))
+            .Publish(ctx => new UpdateOrderCommand(ctx.Message.OrderId, EStatus.StockUnavailable))
     );
 
         // Pagamento
@@ -116,7 +116,7 @@ public class ProductOrderingSaga : MassTransitStateMachine<ProductOrderingSagaDa
                     ctx.Saga.IsRefunded = true;
                 })
                 .TransitionTo(PaymentFailed)
-                .Publish(ctx => new ReturnStockCommand(ctx.Saga.OrderId, ctx.Saga.ProductId, ctx.Saga.Quantity))
+                .Publish(ctx => new ReturnStockCommand(ctx.Saga.OrderId, ctx.Saga.ProductId, ctx.Saga.Quantity, ctx.Message.Reason))
         // .Publish(ctx => new RefundPayment(ctx.Saga.OrderId, ctx.Saga.Quantity , ctx.Saga.FailureReason))
         );
 
@@ -135,8 +135,7 @@ public class ProductOrderingSaga : MassTransitStateMachine<ProductOrderingSagaDa
                     ctx.Saga.DeliveredAt = ctx.Message.DeliveredAt;
                     ctx.Saga.IsCompleted = true;
                 })
-                .TransitionTo(OrderDelivered)
-                .Finalize(),
+                .TransitionTo(OrderDelivered),
 
             When(ShipmentFailedEvent)
                 .Then(ctx =>
@@ -146,7 +145,6 @@ public class ProductOrderingSaga : MassTransitStateMachine<ProductOrderingSagaDa
                     ctx.Saga.IsCanceled = true;
                 })
                 .TransitionTo(DeliveryFailed)
-                .Finalize()
         );
 
         SetCompletedWhenFinalized();
